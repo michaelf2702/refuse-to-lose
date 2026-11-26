@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refuse to Lose</title>
+<meta name="theme-color" content="#13110f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Refuse to Lose">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday team habit app, calm and encouraging, never shaming
+   IDEA a builder's site board: every action is a brick mortared into a wall that never comes down
+   PICTURE the Legacy Wall, one masonry brick per day, glowing gold by bricks laid
+   COLOUR founders' brand: charcoal ground, warm gold, green complete, blue Freedom Fund, purple Legacy Fund
+   TYPE Archivo 800/900 headings and figures + Archivo text, Caveat for the motto
+   LAYOUT top nav on wide screens, bottom nav on phones; HQ = hero+mission row, wall band, builders, intel+timeline */
+:root{color-scheme:dark;--bg:#13110f;--card:#1d1a17;--card2:#25211d;--line:#3a332b;--ink:#f3ece2;--mute:#b3a796;--gold:#e8a83e;--gold2:#ffcf7a;--green:#5cc28a;--blue:#5a9be6;--purple:#a58be0;--orange:#ec7f45;--mortar:#2a2521}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip;padding-bottom:84px}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-weight:900;line-height:1.05;letter-spacing:-.02em;margin:0}
+h2{font-size:clamp(24px,3vw,32px)}
+h3{font-size:18px;font-weight:800}
+.wrap{max-width:1180px;margin:0 auto;padding:0 max(16px,3vw)}
+header{background:linear-gradient(180deg,#201a14,var(--bg));border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:14px}
+.brand{display:flex;align-items:center;gap:12px;flex:1}
+.brand b{font-size:20px;font-weight:900;letter-spacing:-.01em}
+.motto{font-family:Caveat,cursive;color:var(--gold2);font-size:22px;line-height:1}
+.me{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:14px}
+select,input,textarea{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:16px;min-height:44px}
+select:focus-visible,input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+nav.tabs{display:flex;gap:4px}
+nav.tabs a{color:var(--mute);text-decoration:none;padding:12px 14px;border-radius:10px 10px 0 0;font-weight:600;font-size:15px;display:flex;gap:8px;align-items:center;white-space:nowrap}
+nav.tabs a.on{color:var(--ink);background:var(--bg);box-shadow:inset 0 3px 0 var(--gold)}
+nav.tabs svg{width:18px;height:18px}
+main{padding-block:22px 40px}
+.view{display:none}.view.on{display:block}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.lbl{color:var(--mute);font-size:14px}
+.big{font-size:clamp(36px,5vw,56px);font-weight:900;line-height:1;letter-spacing:-.03em}
+.num{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bar{height:10px;background:var(--mortar);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;border-radius:6px}
+.hero{background:radial-gradient(120% 90% at 100% 0,#5a3a14 0,#2a1f15 45%,var(--card) 80%);}
+.hero .big{color:var(--gold2)}
+.mission{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.hb{min-height:84px;border-radius:12px;border:1px solid var(--line);background:var(--card2);padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s}
+.hb:hover{border-color:var(--gold)}
+.hb.done{background:linear-gradient(160deg,#c8862a,#8f5517);border-color:var(--gold2);color:#fff8ec}
+.hb .t{font-weight:700;font-size:14px;line-height:1.2}
+.hb .s{font-size:13px;opacity:.85}
+.seg{display:flex;gap:4px;margin:10px 0 4px}
+.seg i{flex:1;height:14px;border-radius:3px;background:var(--mortar)}
+.seg i.on{background:var(--gold)}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700;background:#21372b;color:var(--green)}
+.pill.b{background:#3a2c18;color:var(--gold2)}
+.wallband{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:16px;margin-top:16px}
+.wall{display:flex;flex-direction:column-reverse;gap:3px;padding:12px;background:#0d0b0a;border-radius:12px;overflow:hidden}
+.wr{display:flex;gap:3px}
+.wr.off{margin-left:calc((100% - 18px)/14 * -1)}
+.br{flex:1 0 0;height:22px;border-radius:2px;background:var(--mortar);position:relative}
+.br.t{outline:2px solid #fff;outline-offset:-2px}
+.legend{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--mute);margin-top:8px;flex-wrap:wrap}
+.legend .br{flex:none;width:22px;height:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card2);border-radius:12px;padding:10px 12px}
+.stat .num{font-size:22px;display:block;overflow-wrap:anywhere}
+.bc{display:flex;flex-direction:column;gap:10px}
+.av{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:20px;color:#1a120a}
+.kv{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:13px;color:var(--mute)}
+.kv b{display:block;color:var(--ink);font-size:18px;font-weight:800}
+.feed{list-style:none;margin:10px 0 0;padding:0}
+.feed li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:baseline}
+.feed .when{color:var(--mute);font-size:13px;white-space:nowrap}
+.plus{color:var(--gold2);font-weight:800;white-space:nowrap}
+.oath{text-align:center;padding:28px 16px;margin-top:16px;border-top:1px solid var(--line)}
+.oath p{max-width:620px;margin:8px auto 0;color:var(--mute)}
+.form{display:grid;gap:14px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label.fl{display:grid;gap:6px;font-size:14px;color:var(--mute)}
+.btn{min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:var(--card2);cursor:pointer;font-weight:700}
+.btn.p{background:var(--gold);border-color:var(--gold);color:#1a120a}
+.btn:hover{filter:brightness(1.1)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--mute);font-weight:600}
+td.c{text-align:center}td.n,th.n{text-align:right}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--card2)}
+.tick{color:var(--green);font-weight:800}.no{color:#5c544a}
+code{background:#0d0b0a;padding:2px 6px;border-radius:6px;font-size:14px;color:var(--gold2);overflow-wrap:anywhere}
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.a{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card2)}
+.a.got{border-color:var(--gold);background:linear-gradient(160deg,#3a2a14,var(--card2))}
+.a b{display:block}.a span{font-size:13px;color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--gold);color:#1a120a;font-weight:800;padding:10px 18px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+details{margin-top:24px;color:var(--mute);font-size:14px}
+details summary{cursor:pointer;color:var(--ink);font-weight:700;min-height:44px;display:flex;align-items:center}
+.note{font-size:13px;color:var(--mute);margin-top:8px}
+.subnav{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin:0 0 14px;scrollbar-width:none;position:sticky;top:0;z-index:4;background:var(--bg)}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{flex:none;min-height:40px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;font-size:14px;color:var(--mute);white-space:nowrap}
+.subnav button.on{background:var(--gold);border-color:var(--gold);color:#1a120a}
+.bz{display:none}.bz.on{display:block}
+.sample{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#2a2116;border:1px dashed var(--gold);border-radius:12px;padding:8px 14px;margin-bottom:14px;font-size:14px;color:var(--gold2)}
+.flow4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.fs{background:var(--card2);border-radius:12px;padding:12px;position:relative;border:1px solid var(--line)}
+.fs b{display:block;font-size:28px;font-weight:900;line-height:1}
+.fs span{font-size:13px;color:var(--mute)}
+.fs em{font-style:normal;font-size:12px;font-weight:800;color:var(--gold2);display:block;margin-bottom:6px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.tile b{display:block;font-size:30px;font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile span{font-size:14px;color:var(--mute)}
+.dept{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.dept .av{width:40px;height:40px;font-size:17px;border-radius:10px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--line);white-space:nowrap}
+.tag.g{background:#21372b;color:var(--green);border-color:#2f5a40}
+.tag.r{background:#3a1f1c;color:#f08a7c;border-color:#5a2e29}
+.tag.a{background:#3a2c18;color:var(--gold2);border-color:#5c4320}
+.tag.b{background:#1c2a3d;color:#8fbcf0;border-color:#2c4566}
+.mini{min-height:38px;padding:6px 10px;font-size:14px;border-radius:8px}
+.btn.s{min-height:38px;padding:6px 12px;font-size:14px}
+.f3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.addcard summary{min-height:44px;color:var(--gold2)}
+.vision{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.vision div{background:var(--card2);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
+.vision span{display:block;font-size:12px;color:var(--mute);font-weight:400}
+.tgt{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 6.5em;gap:10px;align-items:center;margin:8px 0}
+.tgt .bar{margin:0;height:14px}
+.play details{border-top:1px solid var(--line);margin:0;color:var(--ink);font-size:15px}
+.play details:first-child{border-top:0}
+.play summary{font-weight:700;color:var(--ink)}
+.play .body{padding:0 0 14px;color:var(--ink)}
+.play .body p{margin:6px 0}
+.script{background:#0d0b0a;border-radius:10px;padding:12px 14px;margin:8px 0;white-space:pre-wrap;font-size:15px;line-height:1.5}
+.copy{float:right}
+.empty{color:var(--mute);padding:14px 0;font-size:15px}
+.waterfall .row{padding:6px 0;border-top:1px solid var(--line)}
+@media(max-width:760px){.flow4{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.vision{grid-template-columns:repeat(2,minmax(0,1fr))}.f3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.subnav{top:0}.tgt{grid-template-columns:minmax(0,1fr) 5.5em}.tgt .bar{grid-column:1/-1;order:3}}
+@media(max-width:900px){.g3{grid-template-columns:1fr}.wallband{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.g2{grid-template-columns:1fr}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:#0f0d0b;border-top:1px solid var(--line);z-index:5;justify-content:space-around;padding:4px 4px max(4px,env(safe-area-inset-bottom))}
+nav.tabs a{flex-direction:column;gap:2px;font-size:11px;padding:8px 4px;border-radius:10px;flex:1;align-items:center}
+nav.tabs a.on{box-shadow:inset 0 -3px 0 var(--gold);background:transparent}}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.mission{grid-template-columns:1fr 1fr}.f2{grid-template-columns:1fr}.motto{display:none}table{font-size:13px}th,td{padding:6px 5px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap top">
+  <div class="brand">
+   <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="26" width="17" height="10" rx="1.5" fill="#c8862a"/><rect x="21" y="26" width="17" height="10" rx="1.5" fill="#e8a83e"/><rect x="11" y="14" width="17" height="10" rx="1.5" fill="#ffcf7a"/><rect x="15" y="3" width="10" height="9" rx="1.5" fill="#e8a83e"/></svg>
+   <div><b>Refuse to Lose</b><div class="motto">Un ladrillo más.</div></div>
+  </div>
+  <a href="index.html" class="lbl" style="color:var(--gold2)">Phone app</a>
+  <label class="me" for="who">Building as <select id="who"></select></label>
+ </div>
+ <div class="wrap"><nav class="tabs" id="tabs"></nav></div>
+</header>
+
+<main class="wrap">
+ <!-- HQ -->
+ <section class="view" id="v-hq">
+  <div class="grid g2">
+   <div class="card hero">
+    <div class="lbl">Freedom begins</div>
+    <div class="row" style="margin-top:6px"><div class="big">May 2028</div><span class="pill b" id="daysLeft"></span></div>
+    <p class="lbl" style="margin:6px 0 14px">Founders' target, not a forecast. The estimate rule is still to be agreed.</p>
+    <div id="fundMini"></div>
+   </div>
+   <div class="card">
+    <div class="row"><h3 id="missionTitle">Today's mission</h3><span class="pill" id="missionPill"></span></div>
+    <div class="seg" id="missionSeg"></div>
+    <div class="row lbl"><span id="missionCount"></span><span>Tap a brick to lay it</span></div>
+    <div class="mission" id="mission"></div>
+   </div>
+  </div>
+  <div class="wallband">
+   <div class="card">
+    <div class="row"><h3>Legacy Wall</h3><span class="lbl" id="wallCap"></span></div>
+    <div class="wall" id="wallHQ" style="margin-top:10px"></div>
+    <div class="legend">Fewer <span class="br" style="background:#3d2c17"></span><span class="br" style="background:#8f5517"></span><span class="br" style="background:#d08d2c"></span><span class="br" style="background:#ffcf7a"></span> more team bricks · a quiet day stays in the wall as mortar, nothing resets</div>
+   </div>
+   <div class="card">
+    <h3>Team snapshot</h3>
+    <div class="stats" id="snap" style="margin-top:12px"></div>
+   </div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="row"><h3>The mission: Build · Book · Close · Deliver</h3><a href="#biz" class="btn s" style="color:var(--ink);text-decoration:none;display:inline-flex;align-items:center">Open Business HQ</a></div><div class="flow4" id="hqFlow"></div></div>
+  <h2 style="margin:28px 0 12px">Builders</h2>
+  <div class="grid g3" id="builders"></div>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="card"><h3>Legacy intelligence</h3><ul class="feed" id="intel"></ul></div>
+   <div class="card"><h3>Recent timeline</h3><ul class="feed" id="timeline"></ul></div>
+  </div>
+  <div class="oath">
+   <div class="motto" style="font-size:34px">Un ladrillo más.</div>
+   <p>Builder's oath: I lay today's brick. If I miss one, I return, because the next brick matters more than yesterday's mistake.</p>
+  </div>
+ </section>
+
+ <!-- BUILD -->
+ <section class="view" id="v-build">
+  <div class="grid g2">
+   <div class="card">
+    <h2>Lay today's bricks</h2>
+    <p class="lbl">One row per builder per date. Saving again on the same date updates that row.</p>
+    <form class="form" id="bform">
+     <div class="f2">
+      <label class="fl" for="fMember">Member ID<select id="fMember"></select></label>
+      <label class="fl" for="fDate">Date<input type="date" id="fDate"></label>
+     </div>
+     <div class="mission" id="fHabits" style="margin:0"></div>
+     <label class="fl" for="fNotes">Notes<input id="fNotes" placeholder="Spanish lesson; 5k run"></label>
+     <div class="row"><div><span class="lbl">Bricks </span><span class="big" id="fBricks" style="font-size:40px">0</span><span class="lbl"> / 6</span></div>
+      <div style="display:flex;gap:8px"><button type="button" class="btn" id="fDel">Delete row</button><button class="btn p">Save row</button></div></div>
+     <p class="note">Bricks = <code>=COUNTIF(C2:H2,TRUE)</code>, the recorded Brick Tracker formula.</p>
+    </form>
+   </div>
+   <div class="card">
+    <div class="row"><h3>Brick Tracker</h3><span class="lbl">Tap a row to edit</span></div>
+    <div class="scroll" style="margin-top:10px"><table id="tbl"></table></div>
+   </div>
+  </div>
+ </section>
+
+ <!-- BUSINESS HQ -->
+ <section class="view" id="v-biz">
+  <div class="row" style="margin-bottom:10px"><h2>Business HQ</h2><span class="lbl">Build · Book · Close · Deliver</span></div>
+  <div class="sample" id="sampleBar"><span>Showing sample data so you can see it working.</span><button class="btn s" id="clearSample" type="button">Clear sample, start for real</button></div>
+  <nav class="subnav" id="subnav"></nav>
+
+  <div class="bz" id="bz-room">
+   <div class="grid g2">
+    <div class="card hero">
+     <div class="lbl">Our freedom target</div>
+     <div class="row" style="margin-top:6px"><div class="big">May 2028</div><span class="pill b" id="paceTag"></span></div>
+     <p class="lbl" style="margin:6px 0 4px">54 clients · £8,100 a month support profit. A planning target, not a guarantee.</p>
+     <div id="roomTarget"></div>
+    </div>
+    <div class="card">
+     <h3>The mission, live</h3>
+     <p class="lbl" style="margin:4px 0 0">Jack builds it, Leo books it, Michael closes it, Jack delivers it.</p>
+     <div class="flow4" id="roomFlow"></div>
+    </div>
+   </div>
+   <div class="tiles" id="roomTiles" style="margin-top:16px"></div>
+   <div class="grid g2" style="margin-top:16px">
+    <div class="card"><h3>The three departments</h3><div id="roomDepts" style="margin-top:8px"></div></div>
+    <div class="card"><h3>Next up</h3><ul class="feed" id="roomNext"></ul></div>
+   </div>
+   <div class="card" style="margin-top:16px"><h3>What the freedom buys</h3>
+    <div class="vision">
+     <div>Property<span>Our own bricks and mortar</span></div><div>Travel<span>Trips paid for by the business</span></div><div>Location freedom<span>Work from anywhere, leave the UK</span></div><div>Invest<span>Crypto, bonds, property</span></div>
+     <div>Build a brand<span>Our name on it</span></div><div>Shredded and strong<span>Body pillar</span></div><div>Learn Spanish<span>Un ladrillo más</span></div><div>Freedom together<span>Jack, Leo, Michael</span></div>
+    </div>
+   </div>
+  </div>
+
+  <div class="bz" id="bz-leads">
+   <details class="card addcard" id="leadAdd"><summary>+ Add a lead</summary>
+    <form class="form" id="leadForm" style="margin-top:10px">
+     <div class="f3">
+      <label class="fl" for="lBiz">Business<input id="lBiz" required placeholder="Hartley Roofing"></label>
+      <label class="fl" for="lName">Contact<input id="lName" placeholder="Dave Hartley"></label>
+      <label class="fl" for="lPhone">Phone or handle<input id="lPhone" placeholder="@hartleyroofing"></label>
+      <label class="fl" for="lNiche">Type<select id="lNiche"></select></label>
+      <label class="fl" for="lCh">Channel<select id="lCh"></select></label>
+      <label class="fl" for="lOwner">Owner<select id="lOwner"></select></label>
+     </div>
+     <div class="f2"><label class="fl" for="lType">Legal type<select id="lType"><option>Limited company</option><option>Sole trader</option><option>Partnership</option><option>Not sure</option></select></label>
+      <label class="fl" for="lNotes">Notes<input id="lNotes" placeholder="Posts roof jobs on Instagram, slow to reply"></label></div>
+     <div><button class="btn p">Add lead</button></div>
+    </form>
+   </details>
+   <div class="card" style="margin-top:14px"><div class="row"><h3>Lead Centre</h3><select id="leadFilter" class="mini"><option value="">All open</option><option>New</option><option>Contacted</option><option>Replied</option><option>Booked</option><option>Lost</option></select></div>
+    <div class="scroll" style="margin-top:8px"><table id="leadTbl"></table></div></div>
+  </div>
+
+  <div class="bz" id="bz-appts">
+   <details class="card addcard" id="apptAdd"><summary>+ Book an appointment</summary>
+    <form class="form" id="apptForm" style="margin-top:10px">
+     <div class="f3">
+      <label class="fl" for="aLead">Lead<select id="aLead" required></select></label>
+      <label class="fl" for="aDate">Date<input type="date" id="aDate" required></label>
+      <label class="fl" for="aTime">Time<input type="time" id="aTime" value="10:00"></label>
+     </div>
+     <div class="f2"><label class="fl" for="aBy">Booked by<select id="aBy"></select></label><label class="fl" for="aNotes">Setter notes<input id="aNotes" placeholder="Owner, 4 vans, losing calls while on jobs"></label></div>
+     <div><button class="btn p">Book it</button></div>
+    </form>
+   </details>
+   <div class="card" style="margin-top:14px"><div class="row"><h3>Appointments</h3><span class="lbl" id="apptSum"></span></div>
+    <div class="scroll" style="margin-top:8px"><table id="apptTbl"></table></div></div>
+  </div>
+
+  <div class="bz" id="bz-pipe">
+   <details class="card addcard" id="dealAdd"><summary>+ New deal or proposal</summary>
+    <form class="form" id="dealForm" style="margin-top:10px">
+     <div class="f3">
+      <label class="fl" for="dLead">Lead<select id="dLead" required></select></label>
+      <label class="fl" for="dOffer">System<select id="dOffer"></select></label>
+      <label class="fl" for="dBy">Booked by<select id="dBy"></select></label>
+      <label class="fl" for="dSetup">Setup £<input id="dSetup" type="number" min="0" step="50" inputmode="numeric"></label>
+      <label class="fl" for="dMonthly">Monthly £<input id="dMonthly" type="number" min="0" step="10" inputmode="numeric"></label>
+      <label class="fl" for="dStage">Stage<select id="dStage"></select></label>
+     </div>
+     <div><button class="btn p">Save deal</button></div>
+     <p class="note">When a deal reaches Deposit paid: a build is created for Jack, 20% of the setup goes to the Freedom Fund, and Michael gets a Business brick.</p>
+    </form>
+   </details>
+   <div class="card" style="margin-top:14px"><div class="row"><h3>Sales pipeline</h3><span class="lbl" id="pipeSum"></span></div>
+    <div class="scroll" style="margin-top:8px"><table id="dealTbl"></table></div></div>
+  </div>
+
+  <div class="bz" id="bz-prod">
+   <div class="card"><div class="row"><h3>Production</h3><span class="lbl">Target: live in 10 working days</span></div>
+    <div class="scroll" style="margin-top:8px"><table id="buildTbl"></table></div>
+    <p class="note">Builds appear here automatically when a deposit is paid. Jack's delivery checklist is in the Playbook.</p></div>
+  </div>
+
+  <div class="bz" id="bz-clients">
+   <div class="card"><div class="row"><h3>Client Hub</h3><span class="lbl" id="clientSum"></span></div>
+    <div class="scroll" style="margin-top:8px"><table id="clientTbl"></table></div></div>
+  </div>
+
+  <div class="bz" id="bz-money">
+   <div class="tiles" id="moneyTiles"></div>
+   <div class="grid g2" style="margin-top:16px">
+    <div class="card waterfall"><h3>Where the setup money went</h3><p class="lbl">All deals with a deposit paid, split as agreed in the plan.</p><div id="waterfall"></div></div>
+    <div class="card"><h3>Monthly fees</h3><div id="mrrBox"></div></div>
+   </div>
+   <p class="note">Freedom Fund shares are added to the Funds tab automatically. Tools cost is estimated at £50 a client a month. Set money aside for tax and check with an accountant.</p>
+  </div>
+
+  <div class="bz" id="bz-score">
+   <div class="card"><div class="row"><h3>This week</h3><span class="lbl" id="weekLbl"></span></div>
+    <div class="row" style="margin:10px 0 4px"><span class="lbl">Log outreach as <b id="outWho"></b></span>
+     <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn s" data-out="1" type="button">+1 contact</button><button class="btn s" data-out="5" type="button">+5</button><button class="btn s p" data-out="10" type="button">+10</button></div></div>
+    <div id="scoreBars"></div>
+   </div>
+   <div class="grid g3" id="scoreCards" style="margin-top:16px"></div>
+  </div>
+
+  <div class="bz" id="bz-play">
+   <div class="card play" id="playbook"></div>
+  </div>
+ </section>
+
+ <!-- WALL -->
+ <section class="view" id="v-wall">
+  <div class="row"><h2>The Legacy Wall</h2>
+   <label class="me" for="wallWho">Show <select id="wallWho"></select></label></div>
+  <p class="lbl" id="wallSum"></p>
+  <div class="card"><div class="wall" id="wallBig"></div>
+   <div class="legend">Each brick is one day, oldest at the bottom. Brighter means more bricks laid that day.</div></div>
+  <div class="card" style="margin-top:16px"><h3>Bricks by habit</h3><div id="habitBars" style="margin-top:8px"></div></div>
+ </section>
+
+ <!-- FUNDS -->
+ <section class="view" id="v-funds">
+  <h2 style="margin-bottom:14px">Freedom Fund and Legacy Fund</h2>
+  <div class="grid g2" id="fundCards"></div>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="card">
+    <h3>Record a contribution</h3>
+    <form class="form" id="tform" style="margin-top:12px">
+     <div class="f2">
+      <label class="fl" for="tFund">Fund<select id="tFund"><option value="freedom">Freedom Fund</option><option value="legacy">Legacy Fund</option></select></label>
+      <label class="fl" for="tAmt">Amount (£)<input id="tAmt" type="number" min="1" step="1" value="250" inputmode="numeric"></label>
+     </div>
+     <div class="f2">
+      <label class="fl" for="tMember">Builder<select id="tMember"></select></label>
+      <label class="fl" for="tNote">Note<input id="tNote" placeholder="Monthly deposit"></label>
+     </div>
+     <div><button class="btn p">Add to fund</button></div>
+    </form>
+   </div>
+   <div class="card"><h3>Ledger</h3><div class="scroll" style="margin-top:10px"><table id="ledger"></table></div></div>
+  </div>
+  <form class="card form" id="baseForm" style="margin-top:16px"><h3>Starting balances</h3><p class="lbl" style="margin:0">What's already in each fund today. Saved on this device only.</p>
+   <div class="f2"><label class="fl" for="baseF">Freedom Fund (£)<input id="baseF" type="number" min="0" step="1" inputmode="numeric"></label><label class="fl" for="baseL">Legacy Fund (£)<input id="baseL" type="number" min="0" step="1" inputmode="numeric"></label></div>
+   <div><button class="btn p">Save balances</button></div></form>
+ </section>
+
+ <!-- BUILDERS -->
+ <section class="view" id="v-team">
+  <h2 style="margin-bottom:14px">The brotherhood</h2>
+  <div class="grid g3" id="builders2"></div>
+  <h2 style="margin-top:28px">Hall of Fame</h2>
+  <p class="lbl">Milestones earned from the Brick Tracker. Gold means unlocked.</p>
+  <div id="hall"></div>
+ </section>
+
+ <details>
+  <summary>What this demo is built on</summary>
+  <p><b>Confirmed in the handover:</b> Brick Tracker columns Date, Member ID, Spanish, Online Skill/Business, Training, Content, Reading, Budget, Bricks, Notes; Bricks = <code>=COUNTIF(C2:H2,TRUE)</code>; member totals = <code>=SUMIFS('Brick Tracker'!$I:$I,'Brick Tracker'!$B:$B,C$1)</code>; the wall never resets; fund targets £45,000 and £30,000.</p>
+  <p><b>Demo rules, for the founders to approve:</b> a streak counts consecutive days with at least one brick, and today does not break it until the day ends; momentum compares the last 7 days with the 7 before (High, Steady or Building); Legacy Score = lifetime bricks × 10 + current streak × 5; a new level every 100 bricks; team streak counts days when all three builders laid a brick.</p>
+  <p><b>Business HQ:</b> a deal at Deposit paid creates a build for Jack and sends 20% of the setup fee to the Freedom Fund. A build marked Live adds the client to the Client Hub and their monthly fee to the totals. Logging a lead, booking, deal or outreach lays a Business brick for whoever is selected in Building as.</p>
+  <p>Everything starts from zero. Enter your fund starting balances on the Funds tab. Data saves in this browser only until shared data is built.</p>
+  <p><button class="btn" id="reset" type="button">Clear all data</button></p>
+ </details>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+const H=[['sp','Spanish'],['biz','Online Skill/Business'],['tr','Training'],['co','Content'],['re','Reading'],['bu','Budget']];
+const M=[{id:'JACK',name:'Jack',col:'#e8a83e',note:'Founder, primary stakeholder'},{id:'LEO',name:'Leo',col:'#ec7f45',note:'Founder, appointment setting'},{id:'MICHAEL',name:'Michael',col:'#a58be0',note:'Founder, AI automation'}];
+const FUNDS={freedom:{name:'Freedom Fund',goal:45000,base:0,col:'var(--blue)'},legacy:{name:'Legacy Fund',goal:30000,base:0,col:'var(--purple)'}};
+const TABS=[['hq','HQ','M3 11l9-7 9 7v9h-6v-6H9v6H3z'],['build','Bricks','M3 14h8v6H3zM13 14h8v6h-8zM8 6h8v6H8z'],['biz','Business','M3 8h18v12H3zM8 8V5h8v3M3 13h18'],['wall','Wall','M2 4h20v16H2zM2 9h20M2 15h20M9 4v5M15 9v6M9 15v5'],['funds','Funds','M4 7h16v12H4zM4 11h16M15 15h2'],['team','Team','M8 11a3 3 0 100-6 3 3 0 000 6zM16 11a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15c3 0 8 1 8 5']];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
+const TODAY=iso(new Date());
+const addD=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
+const gbp=n=>'£'+Math.round(n).toLocaleString('en-GB');
+const fmtD=s=>new Date(s+'T12:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const KEY='refuse-to-lose-laptop-v2';
+
+function seed(){return{rows:[],tx:[],me:'JACK'}}
+const EMPTYBIZ=()=>({sample:false,leads:[],appts:[],deals:[],builds:[],out:[]});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.rows)S=seed();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+const bricks=r=>H.filter(([k])=>r[k]).length;
+const byDay=mid=>{const o={};for(const r of S.rows)if(!mid||r.mid===mid)o[r.date]=(o[r.date]||0)+bricks(r);return o};
+const total=mid=>S.rows.reduce((a,r)=>a+(!mid||r.mid===mid?bricks(r):0),0);
+function streak(mid){const d=byDay(mid);let c=0,x=d[TODAY]?TODAY:addD(TODAY,-1);while(d[x]){c++;x=addD(x,-1)}return c}
+function teamStreak(){let c=0,x=TODAY;const ok=x=>M.every(m=>S.rows.some(r=>r.mid===m.id&&r.date===x&&bricks(r)));if(!ok(x))x=addD(x,-1);while(ok(x)){c++;x=addD(x,-1)}return c}
+function span(mid,a,b){const d=byDay(mid);let t=0;for(let i=a;i<b;i++)t+=d[addD(TODAY,-i)]||0;return t}
+function momentum(mid){const a=span(mid,0,7),b=span(mid,7,14)||1;const q=a/b;return q>=1.1?'High':q>=.9?'Steady':'Building'}
+const score=mid=>total(mid)*10+streak(mid)*5;
+const level=mid=>Math.floor(total(mid)/100)+1;
+const fundBal=f=>((S.base&&S.base[f])||0)+S.tx.filter(t=>t.fund===f&&!t.seed).reduce((a,t)=>a+t.amt,0);
+const rowOf=(mid,date)=>S.rows.find(r=>r.mid===mid&&r.date===date);
+
+const ACH=[['First brick','Lay your first brick',m=>total(m)>=1],['Comeback','Returned after a missed day',m=>{const d=byDay(m);return Object.keys(d).some(x=>!d[addD(x,-1)]&&d[addD(x,-2)])}],['Perfect day','All six bricks in one day',m=>S.rows.some(r=>r.mid===m&&bricks(r)===6)],['Week of iron','7-day streak',m=>maxStreak(m)>=7],['Month of mortar','30-day streak',m=>maxStreak(m)>=30],['Century','100 lifetime bricks',m=>total(m)>=100],['Foundation','250 lifetime bricks',m=>total(m)>=250],['Cornerstone','500 lifetime bricks',m=>total(m)>=500],['Hablo español','50 Spanish bricks',m=>hc(m,'sp')>=50],['Business builder','50 Online Skill/Business bricks',m=>hc(m,'biz')>=50],['Bookworm','50 Reading bricks',m=>hc(m,'re')>=50]];
+function hc(m,k){return S.rows.filter(r=>r.mid===m&&r[k]).length}
+function maxStreak(m){const d=Object.keys(byDay(m)).filter(x=>byDay(m)[x]).sort();let best=0,c=0,p=null;for(const x of d){c=p&&addD(p,1)===x?c+1:1;best=Math.max(best,c);p=x}return best}
+const latestAch=m=>{const g=ACH.filter(a=>a[2](m));return g.length?g[g.length-1][0]:'—'};
+
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)}
+const $=id=>document.getElementById(id);
+
+function wall(el,mid,weeks){
+ const d=byDay(mid),max=mid?6:18;const start=addD(TODAY,-(weeks*7-1));let rows='';
+ for(let w=0;w<weeks;w++){let cells='';const n=w%2?8:7;
+  for(let i=0;i<n;i++){const idx=w*7+(w%2?i-1:i);if(idx<0||idx>=weeks*7){cells+='<span class="br" style="opacity:.35"></span>';continue}
+   const day=addD(start,idx),v=d[day]||0,q=Math.pow(v/max,1.7);
+   const bg=v?`color-mix(in srgb,#ffcf7a ${Math.round(q*100)}%,#3d2c17)`:'var(--mortar)';
+   cells+=`<span class="br${day===TODAY?' t':''}" style="background:${bg}" title="${esc(fmtD(day))}: ${v} brick${v===1?'':'s'}"></span>`}
+  rows+=`<div class="wr${w%2?' off':''}">${cells}</div>`}
+ el.innerHTML=rows;
+}
+
+function builderCard(m){
+ const t=rowOf(m.id,TODAY),tb=t?bricks(t):0;
+ const contrib=S.tx.filter(x=>x.mid===m.id).reduce((a,x)=>a+x.amt,0);
+ return`<div class="card bc"><div class="row" style="align-items:center"><div style="display:flex;gap:12px;align-items:center"><div class="av" style="background:${m.col}">${m.name[0]}</div><div><h3>${m.name}</h3><div class="lbl">Level ${level(m.id)} · ${esc(m.note)}</div></div></div><span class="pill${momentum(m.id)==='Building'?' b':''}">${momentum(m.id)}</span></div>
+ <div class="seg">${H.map(([k])=>`<i class="${t&&t[k]?'on':''}"></i>`).join('')}</div>
+ <div class="kv"><div><b>${tb}/6</b>today</div><div><b>${streak(m.id)}d</b>streak</div><div><b>${score(m.id).toLocaleString('en-GB')}</b>score</div><div><b>${total(m.id).toLocaleString('en-GB')}</b>lifetime</div><div><b>${gbp(contrib)}</b>to funds</div><div><b>${hc(m.id,'sp')}</b>Spanish</div></div>
+ <div class="lbl">Latest achievement: <b style="color:var(--gold2)">${latestAch(m.id)}</b></div></div>`;
+}
+
+function renderHQ(){
+ const me=M.find(m=>m.id===S.me),r=rowOf(me.id,TODAY),n=r?bricks(r):0;
+ const dl=Math.round((new Date('2028-05-01T12:00')-new Date(TODAY+'T12:00'))/864e5);
+ $('daysLeft').textContent=dl.toLocaleString('en-GB')+' days to go';
+ $('fundMini').innerHTML=Object.entries(FUNDS).map(([k,f])=>{const b=fundBal(k),p=b/f.goal*100;return`<div style="margin-top:10px"><div class="row"><b>${f.name}</b><span class="num">${gbp(b)} <span class="lbl">of ${gbp(f.goal)}</span></span></div><div class="bar"><i style="width:${Math.min(p,100)}%;background:${f.col}"></i></div><div class="row lbl"><span>${p.toFixed(1)}%</span><span>${gbp(Math.max(f.goal-b,0))} to go</span></div></div>`}).join('');
+ $('missionTitle').textContent=`${me.name}'s mission today`;
+ $('missionPill').textContent=n===6?'Wall complete':n>=3?'On track':n?'Building':'Ready to start';
+ $('missionPill').className='pill'+(n>=3?'':' b');
+ $('missionSeg').innerHTML=H.map(([k])=>`<i class="${r&&r[k]?'on':''}"></i>`).join('');
+ $('missionCount').textContent=`${n}/6 bricks laid`;
+ $('mission').innerHTML=H.map(([k,l])=>`<button class="hb${r&&r[k]?' done':''}" data-h="${k}" type="button"><span class="t">${l}</span><span class="s">${r&&r[k]?'Laid ✓':'+1 brick'}</span></button>`).join('');
+ wall($('wallHQ'),null,10);$('wallCap').textContent='Last 10 weeks, whole team';
+ const todayT=S.rows.filter(x=>x.date===TODAY).reduce((a,x)=>a+bricks(x),0);
+ const active=M.filter(m=>span(m.id,0,7)>0).length;
+ $('snap').innerHTML=[['Today',todayT+'/18'],['Lifetime',total().toLocaleString('en-GB')],['Team streak',teamStreak()+'d'],['Momentum',momentum()],['Legacy score',M.reduce((a,m)=>a+score(m.id),0).toLocaleString('en-GB')],['Active builders',active+'/3']].map(([l,v])=>`<div class="stat"><span class="lbl">${l}</span><span class="num">${v}</span></div>`).join('');
+ $('builders').innerHTML=M.map(builderCard).join('');
+ // intel
+ const tot=total(),next=Math.ceil((tot+1)/500)*500;
+ let bestW=0,bestWi=0;for(let w=0;w<16;w++){const v=span(null,w*7,w*7+7);if(v>bestW){bestW=v;bestWi=w}}
+ const wk=H.map(([k,l])=>[l,S.rows.filter(x=>x[k]&&x.date>addD(TODAY,-7)).length]).sort((a,b)=>b[1]-a[1]);
+ const lead=[...M].sort((a,b)=>span(b.id,0,7)-span(a.id,0,7))[0];
+ const intel=[[`${(next-tot)} bricks to the team's ${next.toLocaleString('en-GB')}-brick milestone.`],[bestWi===0?`This is the strongest week on the wall so far: ${bestW} bricks.`:`Strongest week so far: ${bestW} bricks, ${bestWi} week${bestWi>1?'s':''} ago. This week: ${span(null,0,7)}.`],[`${wk[0][0]} is the most-laid brick this week (${wk[0][1]}). ${wk[5][0]} has the most room to grow (${wk[5][1]}).`],[`${lead.name} leads the last 7 days with ${span(lead.id,0,7)} bricks.`],[`Freedom Fund is ${(fundBal('freedom')/450).toFixed(1)}% of the way; Legacy Fund ${(fundBal('legacy')/300).toFixed(1)}%.`]];
+ if(!tot)intel.splice(0,intel.length,['Lay your first brick today. Insights appear here as the wall grows.']);
+ $('intel').innerHTML=intel.map(([t],i)=>`<li><span class="plus">${['◆','▲','●','★','£'][i]}</span><span>${esc(t)}</span><span></span></li>`).join('');
+ // timeline
+ const ev=[...S.rows.filter(x=>bricks(x)).map(x=>({d:x.date,who:x.mid,t:`laid ${H.filter(([k])=>x[k]).map(h=>h[1]).join(', ')}`,v:'+'+bricks(x)+' 🧱'.slice(0,0)+(bricks(x)===1?' brick':' bricks')})),...S.tx.map(x=>({d:x.date,who:x.mid,t:`added to ${FUNDS[x.fund].name}${x.note?' · '+x.note:''}`,v:'+'+gbp(x.amt),ts:x.ts||0}))].sort((a,b)=>b.d.localeCompare(a.d)||(b.ts||0)-(a.ts||0)).slice(0,7);
+ $('timeline').innerHTML=ev.length?ev.map(e=>`<li><span class="when">${e.d===TODAY?'Today':esc(fmtD(e.d))}</span><span><b>${esc(M.find(m=>m.id===e.who)?.name)}</b> ${esc(e.t)}</span><span class="plus">${esc(e.v)}</span></li>`).join(''):'<li><span></span><span class="lbl">Nothing yet. Bricks and fund deposits show up here.</span><span></span></li>';
+}
+
+function loadForm(){const r=rowOf($('fMember').value,$('fDate').value);
+ $('fHabits').querySelectorAll('.hb').forEach(b=>{b.classList.toggle('done',!!(r&&r[b.dataset.h]));b.querySelector('.s').textContent=r&&r[b.dataset.h]?'TRUE':'FALSE'});
+ $('fNotes').value=r?r.notes:'';calcForm()}
+function calcForm(){$('fBricks').textContent=$('fHabits').querySelectorAll('.done').length}
+function renderBuild(){
+ const rows=[...S.rows].sort((a,b)=>b.date.localeCompare(a.date)||a.mid.localeCompare(b.mid)).slice(0,24);
+ $('tbl').innerHTML=rows.length?`<thead><tr><th>Date</th><th>Member ID</th>${H.map(([,l])=>`<th class="c" title="${l}">${l.split('/')[0].slice(0,7)}</th>`).join('')}<th class="n">Bricks</th><th>Notes</th></tr></thead><tbody>${rows.map(r=>`<tr class="click" data-m="${esc(r.mid)}" data-d="${esc(r.date)}"><td>${esc(r.date)}</td><td>${esc(r.mid)}</td>${H.map(([k])=>`<td class="c">${r[k]?'<span class="tick">✓</span>':'<span class="no">·</span>'}</td>`).join('')}<td class="n num">${bricks(r)}</td><td>${esc(r.notes).slice(0,40)}</td></tr>`).join('')}</tbody>`:'<tr><td class="lbl">No rows yet. Lay your first bricks on the left.</td></tr>';
+}
+function renderWall(){const mid=$('wallWho').value||null;wall($('wallBig'),mid,17);
+ const d=byDay(mid),days=Object.keys(d).filter(x=>d[x]).length;
+ $('wallSum').textContent=`${total(mid).toLocaleString('en-GB')} bricks across ${days} building days. Every one of them stays.`;
+ const rs=S.rows.filter(r=>!mid||r.mid===mid),mx=Math.max(...H.map(([k])=>rs.filter(r=>r[k]).length),1);
+ const cols=['var(--gold)','var(--orange)','var(--green)','var(--purple)','var(--blue)','var(--gold2)'];
+ $('habitBars').innerHTML=H.map(([k,l],i)=>{const v=rs.filter(r=>r[k]).length;return`<div style="display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 3.5em;gap:10px;align-items:center;margin:6px 0"><span>${l}</span><div class="bar" style="margin:0;height:14px"><i style="width:${v/mx*100}%;background:${cols[i]}"></i></div><span class="num" style="text-align:right">${v}</span></div>`}).join('');
+}
+function renderFunds(){
+ $('fundCards').innerHTML=Object.entries(FUNDS).map(([k,f])=>{const b=fundBal(k),p=b/f.goal*100;return`<div class="card"><div class="lbl">${f.name}</div><div class="big" style="color:${f.col};margin:6px 0">${gbp(b)}</div><div class="bar" style="height:16px"><i style="width:${Math.min(p,100)}%;background:${f.col}"></i></div><div class="row lbl"><span>${p.toFixed(2)}% of ${gbp(f.goal)}</span><span>${gbp(Math.max(f.goal-b,0))} remaining</span></div></div>`}).join('');
+ $('ledger').innerHTML=S.tx.length?`<thead><tr><th>Date</th><th>Fund</th><th>Builder</th><th class="n">Amount</th><th>Note</th></tr></thead><tbody>${[...S.tx].sort((a,b)=>b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0)).map(t=>`<tr><td>${esc(fmtD(t.date))}</td><td>${FUNDS[t.fund].name.split(' ')[0]}</td><td>${esc(M.find(m=>m.id===t.mid)?.name)}</td><td class="n num">${gbp(t.amt)}</td><td>${esc(t.note)}${t.seed?' <span class="lbl">(in baseline)</span>':''}</td></tr>`).join('')}</tbody>`:'<tr><td class="lbl">No contributions yet.</td></tr>';
+}
+function renderHall(){
+ $('builders2').innerHTML=M.map(builderCard).join('');
+ $('hall').innerHTML=M.map(m=>{const g=ACH.filter(a=>a[2](m.id)).length;return`<div class="card" style="margin-top:14px"><div class="row"><h3>${m.name}</h3><span class="pill b">${g}/${ACH.length} unlocked</span></div><div class="ach">${ACH.map(a=>`<div class="a${a[2](m.id)?' got':''}"><b>${a[0]}</b><span>${a[1]}</span></div>`).join('')}</div></div>`}).join('');
+}
+function render(){renderHQ();renderBuild();renderWall();renderFunds();renderHall();renderBiz()}
+
+// ---------- BUSINESS HQ ----------
+const OFFERS=[
+ {k:'trades',name:'Trades Job Engine',who:'Roofers, builders, trades',setup:3000,monthly:200,what:'Website, quote CRM, missed-call text-back, automatic quote chasers, review requests'},
+ {k:'salon',name:'Booking & Rebook',who:'Salons, barbers, clinics, PTs',setup:2000,monthly:150,what:'Online booking, reminders and deposits, win-back campaigns'},
+ {k:'agent',name:'Agent Lead Engine',who:'Estate and letting agents',setup:4000,monthly:250,what:'Instant enquiry replies, viewing booking, landlord and tenant reminders'},
+ {k:'portal',name:'Client Onboarding Portal',who:'Accountants, bookkeepers, solicitors',setup:4500,monthly:300,what:'Client portal, automatic document chasers, status updates'},
+ {k:'quote',name:'Quote & Repeat',who:'Cleaners, gardeners, removals',setup:2000,monthly:125,what:'Instant quote calculator, repeat bookings, payment links'},
+ {k:'ai',name:'AI Assistant add-on',who:'Any of the above',setup:500,monthly:100,what:'Answers common questions and books calls, 24/7'}];
+const NICHES=['Trades','Salons & clinics','Estate & letting','Accountants & solicitors','Cleaners & home services','Other'];
+const CHANNELS=['Instagram DM','Facebook DM','LinkedIn','Email','Cold call','Referral','Partner','Walk-in'];
+const BOOKERS=['Leo','Setter network','Michael','Jack','Referral'];
+const LEAD_ST=['New','Contacted','Replied','Booked','Won','Lost'];
+const APPT_ST=['Booked','Held','No-show','Rescheduled','Cancelled'];
+const DEAL_ST=['Proposal sent','Deposit paid','Paid in full','Lost'];
+const BUILD_ST=['Kick-off','Building','Testing','Client review','Live'];
+const SUBS=[['room','Control Room'],['leads','Lead Centre'],['appts','Appointments'],['pipe','Sales Pipeline'],['prod','Production'],['clients','Client Hub'],['money','Money Centre'],['score','Team Scoreboard'],['play','Playbook']];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const addWork=(s,n)=>{let d=s,c=0;while(c<n){d=addD(d,1);const w=new Date(d+'T12:00').getDay();if(w&&w<6)c++}return d};
+const weekStart=s=>{const w=new Date(s+'T12:00').getDay();return addD(s,-((w+6)%7))};
+const opt=(arr,sel)=>arr.map(v=>{const [val,lab]=Array.isArray(v)?v:[v,v];return`<option value="${esc(val)}"${val===sel?' selected':''}>${esc(lab)}</option>`}).join('');
+
+if(!S.biz)S.biz=EMPTYBIZ();
+const B=()=>S.biz;
+let sub='room',clearArm=false;
+const lead=id=>B().leads.find(x=>x.id===id);
+const bname=id=>lead(id)?.biz||'Unknown';
+const offer=k=>OFFERS.find(o=>o.k===k)||OFFERS[0];
+const isClosed=d=>d.stage==='Deposit paid'||d.stage==='Paid in full';
+const buildOf=d=>B().builds.find(b=>b.deal===d.id);
+const liveDeals=()=>B().deals.filter(d=>isClosed(d)&&buildOf(d)?.stage==='Live');
+const fee=d=>d.by==='Setter network'||d.by==='Leo'?Math.round(d.setup*.2):d.by==='Referral'?250:0;
+const mon=TODAY.slice(0,7),wk=weekStart(TODAY);
+const inMon=s=>s&&s.slice(0,7)===mon,inWk=s=>s&&s>=wk&&s<=addD(wk,6);
+const mrr=()=>liveDeals().reduce((a,d)=>a+d.monthly,0),mrrP=()=>liveDeals().reduce((a,d)=>a+Math.max(d.monthly-50,0),0);
+const memName=id=>M.find(m=>m.id===id)?.name||id;
+
+function bizBrick(){let r=rowOf(S.me,TODAY);if(!r){r={date:TODAY,mid:S.me,notes:''};H.forEach(([k])=>r[k]=false);S.rows.push(r)}if(r.biz)return false;r.biz=true;return true}
+function act(msg){const laid=bizBrick();save();render();toast(msg+(laid?' · Business brick laid':''))}
+function closeDeal(d){
+ if(!isClosed(d)||d.fundDone)return;
+ d.fundDone=true;d.closed=TODAY;
+ S.tx.push({date:TODAY,fund:'freedom',mid:'MICHAEL',amt:Math.round(d.setup*.2),note:'20% of '+bname(d.lead)+' setup',ts:Date.now(),deal:d.id});
+ if(!buildOf(d))B().builds.push({id:uid(),deal:d.id,stage:'Kick-off',start:TODAY,due:addWork(TODAY,10)});
+ const l=lead(d.lead);if(l)l.status='Won';
+}
+function pace(){const [y,m]=TODAY.split('-').map(Number);const idx=(y-2026)*12+m-11;const live=liveDeals().length;
+ if(idx<1)return['Pre-launch: first clients in December','b'];const exp=3*idx;return live>=exp?['On pace','g']:[`${exp-live} more clients to be on pace`,'b']}
+
+function flowHTML(){const prod=B().builds.filter(b=>b.stage!=='Live').length;
+ const booked=B().appts.filter(a=>inWk(a.created)).length,closed=B().deals.filter(d=>isClosed(d)&&inMon(d.closed)).length;
+ return[['Jack','Build',prod,'systems in production'],['Leo','Book',booked,'appointments booked this week'],['Michael','Close',closed,'deals closed this month'],['Jack','Deliver',liveDeals().length,'clients live']].map(([w,t,v,l])=>`<div class="fs"><em>${w} · ${t}</em><b>${v}</b><span>${l}</span></div>`).join('')}
+
+function renderRoom(){
+ const [pt,pc]=pace();$('paceTag').textContent=pt;$('paceTag').className='pill '+(pc==='g'?'':'b');
+ const live=liveDeals().length,p=mrrP();
+ $('roomTarget').innerHTML=[['Clients live',live,54,'var(--gold)',String],['Monthly support profit',p,8100,'var(--green)',gbp]].map(([l,v,t,c,f])=>`<div style="margin-top:10px"><div class="row"><b>${l}</b><span class="num">${f(v)} <span class="lbl">of ${f(t)}</span></span></div><div class="bar"><i style="width:${Math.min(v/t*100,100)}%;background:${c}"></i></div></div>`).join('');
+ $('roomFlow').innerHTML=flowHTML();
+ const open=B().leads.filter(l=>!['Won','Lost'].includes(l.status)).length;
+ const held=B().appts.filter(a=>a.status==='Held'&&inMon(a.date)).length;
+ const cl=B().deals.filter(d=>isClosed(d)&&inMon(d.closed)).length;
+ $('roomTiles').innerHTML=[[open,'Active leads'],[held,'Appointments held this month'],[cl,'Deals closed this month'],[gbp(p),'Monthly recurring profit'],[live,'Active clients'],[B().builds.filter(b=>b.stage!=='Live').length,'Systems in production']].map(([v,l])=>`<div class="tile"><b>${v}</b><span>${l}</span></div>`).join('');
+ const jb=B().builds.filter(b=>b.stage!=='Live').length,jl=B().builds.filter(b=>b.stage==='Live'&&inMon(b.live)).length;
+ const lc=B().out.filter(o=>inWk(o.date)&&o.mid==='LEO').reduce((a,o)=>a+o.n,0),lb=B().appts.filter(a=>inWk(a.created)&&(a.by==='Leo'||a.by==='Setter network')).length;
+ const prop=B().deals.filter(d=>d.stage==='Proposal sent').length;
+ $('roomDepts').innerHTML=[[M[0],'Production · build and deliver',`${jb} in build · ${jl} live this month`],[M[1],'Appointments · fill the diary',`${lb} booked · ${lc} contacts this week`],[M[2],'Sales · close the deal',`${cl} closed · ${prop} proposals open`]].map(([m,r,v])=>`<div class="dept"><div class="av" style="background:${m.col}">${m.name[0]}</div><div><b>${m.name}</b><div class="lbl">${r}</div></div><span class="num" style="font-size:14px;text-align:right">${v}</span></div>`).join('');
+ const nx=[];
+ B().appts.filter(a=>a.status==='Booked'&&a.date>=TODAY).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3).forEach(a=>nx.push([a.date===TODAY?'Today':fmtD(a.date),`Call with ${bname(a.lead)} at ${a.time}`,'Michael']));
+ B().builds.filter(b=>b.stage!=='Live').sort((a,b)=>a.due.localeCompare(b.due)).slice(0,2).forEach(b=>{const d=B().deals.find(x=>x.id===b.deal);nx.push([fmtD(b.due),`${bname(d?.lead)} due live (${b.stage})`,'Jack'])});
+ B().deals.filter(d=>d.stage==='Proposal sent').slice(0,2).forEach(d=>nx.push([fmtD(d.date),`Follow up proposal: ${bname(d.lead)}`,'Michael']));
+ $('roomNext').innerHTML=nx.length?nx.map(([w,t,o])=>`<li><span class="when">${esc(w)}</span><span>${esc(t)}</span><span class="tag">${o}</span></li>`).join(''):'<li><span></span><span class="empty">Nothing booked yet. Add a lead to get going.</span><span></span></li>';
+}
+
+function warnTags(l){const t=[];const ind=l.type!=='Limited company';
+ if(l.ch==='Cold call')t.push('<span class="tag a">Screen TPS + CTPS</span>');
+ if(ind&&(l.ch==='Email'))t.push('<span class="tag r">Sole trader: needs consent to email</span>');return t.join(' ')}
+function renderLeads(){
+ const f=$('leadFilter').value;const ls=B().leads.filter(l=>f?l.status===f:!['Won','Lost'].includes(l.status)).sort((a,b)=>b.added.localeCompare(a.added));
+ $('leadTbl').innerHTML=ls.length?`<thead><tr><th>Business</th><th>Type</th><th>Channel</th><th>Owner</th><th>Status</th><th></th></tr></thead><tbody>${ls.map(l=>`<tr><td><b>${esc(l.biz)}</b><div class="lbl">${esc(l.name)}${l.notes?' · '+esc(l.notes).slice(0,40):''}</div>${warnTags(l)}</td><td>${esc(l.niche)}<div class="lbl">${esc(l.type)}</div></td><td>${esc(l.ch)}</td><td>${esc(memName(l.owner))}</td><td><select class="mini" data-set="leads:${l.id}:status">${opt(LEAD_ST,l.status)}</select></td><td><button class="btn s" data-act="book:${l.id}" type="button">Book</button> <button class="btn s" data-act="del:leads:${l.id}" type="button" aria-label="Delete lead">✕</button></td></tr>`).join('')}</tbody>`:'<tr><td class="empty">No leads here yet.</td></tr>';
+}
+function renderAppts(){
+ const as=[...B().appts].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+ const held=as.filter(a=>a.status==='Held').length,done=as.filter(a=>['Held','No-show'].includes(a.status)).length;
+ $('apptSum').textContent=done?`Show rate ${Math.round(held/done*100)}%`:'';
+ $('apptTbl').innerHTML=as.length?`<thead><tr><th>When</th><th>Business</th><th>Booked by</th><th>Status</th><th></th></tr></thead><tbody>${as.map(a=>{const hasDeal=B().deals.some(d=>d.lead===a.lead);return`<tr><td class="num">${a.date===TODAY?'Today':esc(fmtD(a.date))} ${esc(a.time)}</td><td><b>${esc(bname(a.lead))}</b><div class="lbl">${esc(a.notes).slice(0,50)}</div></td><td>${esc(a.by)}</td><td><select class="mini" data-set="appts:${a.id}:status">${opt(APPT_ST,a.status)}</select></td><td>${a.status==='Held'&&!hasDeal?`<button class="btn s p" data-act="deal:${a.lead}:${esc(a.by)}" type="button">Create deal</button>`:''} <button class="btn s" data-act="del:appts:${a.id}" type="button" aria-label="Delete">✕</button></td></tr>`}).join('')}</tbody>`:'<tr><td class="empty">No appointments yet.</td></tr>';
+}
+function renderPipe(){
+ const ds=[...B().deals].sort((a,b)=>b.date.localeCompare(a.date));
+ const open=ds.filter(d=>d.stage==='Proposal sent').reduce((a,d)=>a+d.setup,0);
+ $('pipeSum').textContent=open?`${gbp(open)} in open proposals`:'';
+ $('dealTbl').innerHTML=ds.length?`<thead><tr><th>Business</th><th>System</th><th class="n">Setup</th><th class="n">Monthly</th><th>Booked by</th><th>Stage</th><th></th></tr></thead><tbody>${ds.map(d=>`<tr><td><b>${esc(bname(d.lead))}</b><div class="lbl">Created ${esc(fmtD(d.date))}</div></td><td>${esc(offer(d.offer).name)}</td><td class="n num">${gbp(d.setup)}</td><td class="n num">${gbp(d.monthly)}</td><td>${esc(d.by)}<div class="lbl">Fee ${gbp(fee(d))}</div></td><td><select class="mini" data-set="deals:${d.id}:stage">${opt(DEAL_ST,d.stage)}</select></td><td><button class="btn s" data-act="del:deals:${d.id}" type="button" aria-label="Delete">✕</button></td></tr>`).join('')}</tbody>`:'<tr><td class="empty">No deals yet. Create one from a held appointment.</td></tr>';
+}
+function renderProd(){
+ const bs=[...B().builds].sort((a,b)=>(a.stage==='Live')-(b.stage==='Live')||a.due.localeCompare(b.due));
+ $('buildTbl').innerHTML=bs.length?`<thead><tr><th>Client</th><th>System</th><th>Started</th><th>Due</th><th>Stage</th></tr></thead><tbody>${bs.map(b=>{const d=B().deals.find(x=>x.id===b.deal)||{};const late=b.stage!=='Live'&&b.due<TODAY;const left=Math.round((new Date(b.due+'T12:00')-new Date(TODAY+'T12:00'))/864e5);
+  return`<tr><td><b>${esc(bname(d.lead))}</b></td><td>${esc(offer(d.offer).name)}</td><td class="num">${esc(fmtD(b.start))}</td><td class="num">${esc(fmtD(b.due))} ${b.stage==='Live'?`<span class="tag g">Live ${esc(fmtD(b.live||b.due))}</span>`:late?'<span class="tag r">Overdue</span>':`<span class="tag">${left}d left</span>`}</td><td><select class="mini" data-set="builds:${b.id}:stage">${opt(BUILD_ST,b.stage)}</select></td></tr>`}).join('')}</tbody>`:'<tr><td class="empty">No builds yet. They appear when a deposit is paid.</td></tr>';
+}
+function renderClients(){
+ const ls=liveDeals();$('clientSum').textContent=ls.length?`${ls.length} live · ${gbp(mrr())}/mo`:'';
+ $('clientTbl').innerHTML=ls.length?`<thead><tr><th>Client</th><th>System</th><th class="n">Monthly</th><th>Live since</th><th>Review asked</th><th>Referral asked</th></tr></thead><tbody>${ls.map(d=>`<tr><td><b>${esc(bname(d.lead))}</b><div class="lbl">${esc(lead(d.lead)?.name||'')}</div></td><td>${esc(offer(d.offer).name)}</td><td class="n num">${gbp(d.monthly)}</td><td class="num">${esc(fmtD(buildOf(d).live||buildOf(d).due))}</td><td><input type="checkbox" style="width:24px;height:24px;min-height:0" data-set="deals:${d.id}:review"${d.review?' checked':''} aria-label="Review asked"></td><td><input type="checkbox" style="width:24px;height:24px;min-height:0" data-set="deals:${d.id}:referral"${d.referral?' checked':''} aria-label="Referral asked"></td></tr>`).join('')}</tbody>`:'<tr><td class="empty">No live clients yet. A client appears here when Jack marks their build Live.</td></tr>';
+}
+function renderMoney(){
+ const cd=B().deals.filter(isClosed),tot=cd.reduce((a,d)=>a+d.setup,0),fees=cd.reduce((a,d)=>a+fee(d),0),pot=Math.round(tot*.2),ff=Math.round(tot*.2),split=tot-fees-pot-ff;
+ const mtot=cd.filter(d=>inMon(d.closed)).reduce((a,d)=>a+d.setup,0);
+ $('moneyTiles').innerHTML=[[gbp(tot),'Setup fees, all time'],[gbp(mtot),'Setup fees this month'],[gbp(mrrP()),'Monthly profit from fees'],[gbp(ff),'Sent to Freedom Fund'],[gbp(Math.max(split,0)/3),'Each founder\'s share so far'],[cd.length,'Deals with deposit paid']].map(([v,l])=>`<div class="tile"><b>${v}</b><span>${l}</span></div>`).join('');
+ const rows=[['Setup fees in',tot,'var(--ink)'],['Setter and referral fees',-fees,'var(--orange)'],['Business pot: tax, tools, ads (20%)',-pot,'var(--blue)'],['Freedom Fund (20%)',-ff,'var(--purple)'],['Split three ways',split,'var(--gold2)']];
+ $('waterfall').innerHTML=rows.map(([l,v,c])=>`<div class="row"><span>${l}</span><span class="num" style="color:${c}">${v<0?'−':''}${gbp(Math.abs(v))}</span></div>`).join('')+`<div class="row"><span class="lbl">Jack, Leo and Michael each</span><span class="num">${gbp(Math.max(split,0)/3)}</span></div>`;
+ const g=mrr(),n=liveDeals().length;
+ $('mrrBox').innerHTML=`<div class="big" style="font-size:44px;margin-top:8px">${gbp(mrrP())}<span class="lbl" style="font-size:16px;font-weight:400"> profit a month</span></div><div class="row lbl" style="margin-top:6px"><span>${n} clients · ${gbp(g)} gross</span><span>− ${gbp(n*50)} tools</span></div><div class="bar" style="height:14px"><i style="width:${Math.min(mrrP()/8100*100,100)}%;background:var(--green)"></i></div><div class="row lbl"><span>${(mrrP()/8100*100).toFixed(1)}% of the May 2028 target</span><span>${gbp(8100)}</span></div>`;
+}
+function renderScore(){
+ $('weekLbl').textContent=`w/c ${fmtD(wk)}`;$('outWho').textContent=memName(S.me);
+ const c=B().out.filter(o=>inWk(o.date)).reduce((a,o)=>a+o.n,0),bk=B().appts.filter(a=>inWk(a.created)).length,hd=B().appts.filter(a=>a.status==='Held'&&inWk(a.date)).length;
+ const cl=B().deals.filter(d=>isClosed(d)&&inMon(d.closed)).length;
+ $('scoreBars').innerHTML=[['Contacts this week',c,175,'Leo + setters'],['Appointments booked',bk,4,'this week'],['Appointments held',hd,3,'this week'],['Deals closed',cl,3,'this month']].map(([l,v,t,s])=>`<div class="tgt"><span>${l}<div class="lbl">${s}</div></span><div class="bar"><i style="width:${Math.min(v/t*100,100)}%;background:${v>=t?'var(--green)':'var(--gold)'}"></i></div><span class="num" style="text-align:right">${v} / ${t}</span></div>`).join('');
+ const done=B().builds.filter(b=>b.stage==='Live'),ontime=done.filter(b=>(b.live||b.due)<=b.due).length;
+ const heldAll=B().appts.filter(a=>a.status==='Held').length,closedAll=B().deals.filter(isClosed).length;
+ const lc=B().out.filter(o=>inWk(o.date)&&o.mid==='LEO').reduce((a,o)=>a+o.n,0);
+ $('scoreCards').innerHTML=[[M[0],'Production',[[B().builds.filter(b=>b.stage!=='Live').length,'in build'],[done.filter(b=>inMon(b.live)).length,'live this month'],[done.length?Math.round(ontime/done.length*100)+'%':'—','on time']]],
+  [M[1],'Appointments',[[lc,'contacts this week'],[B().appts.filter(a=>inWk(a.created)&&a.by==='Leo').length,'booked by Leo'],[B().appts.filter(a=>inWk(a.created)&&a.by==='Setter network').length,'booked by setters']]],
+  [M[2],'Sales',[[cl,'closed this month'],[heldAll?Math.round(closedAll/heldAll*100)+'%':'—','close rate'],[gbp(B().deals.filter(d=>d.stage==='Proposal sent').reduce((a,d)=>a+d.setup,0)),'in proposals']]]]
+  .map(([m,r,kv])=>`<div class="card bc"><div style="display:flex;gap:12px;align-items:center"><div class="av" style="background:${m.col}">${m.name[0]}</div><div><h3>${m.name}</h3><div class="lbl">${r}</div></div></div><div class="kv">${kv.map(([v,l])=>`<div><b>${v}</b>${l}</div>`).join('')}</div></div>`).join('');
+}
+const PLAY=[
+ ['The mission',`<p><b>Build · Book · Close · Deliver.</b> We sell software that saves small businesses time and money. Jack builds it, Leo fills the diary, Michael closes, Jack delivers, and every client pays monthly.</p><p><b>Three rules.</b> Sell outcomes, not software. Build once, sell many. A monthly fee on every deal.</p>`],
+ ['Offers and prices',`<div class="scroll"><table><thead><tr><th>System</th><th>For</th><th class="n">Setup</th><th class="n">Monthly</th></tr></thead><tbody>${OFFERS.map(o=>`<tr><td><b>${o.name}</b><div class="lbl" style="white-space:normal">${o.what}</div></td><td style="white-space:normal">${o.who}</td><td class="n num">${gbp(o.setup)}</td><td class="n num">${gbp(o.monthly)}</td></tr>`).join('')}</tbody></table></div><p class="lbl">Starting prices from the plan. Change them as real deals come in.</p>`],
+ ['What counts as a qualified appointment',`<ul><li>Speaking to the owner or decision-maker</li><li>Trading at least a year, and has the problem we fix</li><li>Knows our price range is roughly £2,000 to £4,000</li><li>Booked into Michael's calendar with notes on their situation</li></ul><p>Setters earn 20% of the setup fee when the deposit clears. If Leo books it himself, the fee is Leo's. A referral that becomes a client earns £250.</p>`],
+ ['DM script: trades',`<button class="btn s copy" data-copy="dm" type="button">Copy</button><div class="script" id="sc-dm">Hi [name], saw the [job] you posted in [area], quality work. Quick one: when you're up on a roof and miss a call, does that enquiry get followed up? We build a system that texts missed callers back within a minute and chases your quotes for you. Can I send you a 2-minute video of what it'd look like for [business]?</div>`],
+ ['Cold call opener: trades',`<button class="btn s copy" data-copy="call" type="button">Copy</button><div class="script" id="sc-call">Hi, is that [owner]? It's [setter], I'll be quick. We help roofers and builders stop losing jobs to missed calls and quotes that never get chased. Out of interest, what happens when someone rings while you're on a job?
+[Listen]
+That's exactly what we fix. Would 20 minutes with Michael be worth it to see a demo built for roofers? Is Tuesday or Thursday better?</div><p class="lbl">Screen every list against TPS and CTPS first. If they ask not to be called again, add them to the do-not-call list straight away.</p>`],
+ ['The sales call (Michael)',`<ul><li><b>Before:</b> read the setter's notes, check their website, reviews and socials.</li><li><b>30 minutes:</b> how do they get work, where do jobs slip through, show the demo for their trade, put a £ number on what it's costing them.</li><li><b>Close:</b> fixed scope and price, 50% deposit to start, 50% at launch, monthly fee by direct debit.</li><li><b>After:</b> proposal within two hours; follow up on day 1, 3 and 7.</li></ul>`],
+ ['Delivery checklist (Jack)',`<ul class="chk" style="list-style:none;padding-left:0">${['Kick-off form back: logo, photos, services, areas, phone numbers','Built from the template, not from scratch','Every form sends to the CRM and to the client','Missed-call text tested on a real phone','Quote follow-ups on day 2, 5 and 10 tested','Checked on a phone and a laptop; loads fast','Domain, email and Google Business profile connected','Client review: one round of changes','Screen-recorded guide sent at launch','Review request sent after go-live'].map(t=>`<li style="margin:6px 0">☐ ${t}</li>`).join('')}</ul>`],
+ ['Outreach rules (UK)',`<p>Many trades are sole traders, and PECR treats sole traders and ordinary partnerships like private individuals.</p><ul><li><b>Calls:</b> screen every list against TPS and CTPS, plus our own do-not-call list.</li><li><b>Emails and texts:</b> fine to limited companies with an unsubscribe line. Sole traders and partnerships need consent first.</li><li>For sole traders, use calls (screened), DMs, referrals and walk-ins.</li></ul><p class="lbl">A summary, not legal advice. Check ico.org.uk if unsure.</p>`],
+ ['How the money splits',`<p>From each setup fee: setter fee first (20%, or £250 for a referral), then 20% to the business pot for tax, tools and ads, 20% to the Freedom Fund, and the rest split equally between Jack, Leo and Michael. Monthly fees minus about £50 of tools are profit. To be agreed in writing.</p>`]];
+
+function renderPlay(){$('playbook').innerHTML=PLAY.map(([t,h],i)=>`<details${i===0?' open':''}><summary>${t}</summary><div class="body">${h}</div></details>`).join('')}
+
+function renderBiz(){
+ $('sampleBar').style.display=B().sample?'flex':'none';
+ $('subnav').innerHTML=SUBS.map(([k,l])=>`<button type="button" data-sub="${k}" class="${k===sub?'on':''}">${l}</button>`).join('');
+ document.querySelectorAll('.bz').forEach(e=>e.classList.toggle('on',e.id==='bz-'+sub));
+ {const sn=$('subnav'),on=sn.querySelector('.on');if(on)sn.scrollLeft=on.offsetLeft-sn.offsetLeft-16}
+ $('aLead').innerHTML=opt(B().leads.filter(l=>l.status!=='Lost').map(l=>[l.id,l.biz]));$('dLead').innerHTML=$('aLead').innerHTML;
+ renderRoom();renderLeads();renderAppts();renderPipe();renderProd();renderClients();renderMoney();renderScore();
+ if(!$('playbook').innerHTML)renderPlay();
+ $('hqFlow').innerHTML=flowHTML();
+}
+function setSub(k){sub=k;try{history.replaceState(null,'','#biz-'+k)}catch(e){location.hash='biz-'+k}renderBiz()}
+
+// forms
+$('lNiche').innerHTML=opt(NICHES);$('lCh').innerHTML=opt(CHANNELS);$('lOwner').innerHTML=opt([...M.map(m=>[m.id,m.name]),['Setter network','Setter network']]);
+$('aBy').innerHTML=opt(BOOKERS);$('dBy').innerHTML=opt(BOOKERS);$('dStage').innerHTML=opt(DEAL_ST);$('dOffer').innerHTML=opt(OFFERS.map(o=>[o.k,o.name]));
+const setOffer=()=>{const o=offer($('dOffer').value);$('dSetup').value=o.setup;$('dMonthly').value=o.monthly};setOffer();
+$('dOffer').addEventListener('change',setOffer);$('aDate').value=addD(TODAY,1);
+$('leadForm').addEventListener('submit',e=>{e.preventDefault();const biz=$('lBiz').value.trim();if(!biz)return;
+ B().leads.push({id:uid(),biz,name:$('lName').value.trim(),phone:$('lPhone').value.trim(),niche:$('lNiche').value,ch:$('lCh').value,owner:$('lOwner').value,type:$('lType').value,status:'New',added:TODAY,notes:$('lNotes').value.trim()});
+ ['lBiz','lName','lPhone','lNotes'].forEach(i=>$(i).value='');$('leadAdd').open=false;act('Lead added: '+biz)});
+$('apptForm').addEventListener('submit',e=>{e.preventDefault();const l=lead($('aLead').value);if(!l)return;
+ B().appts.push({id:uid(),lead:l.id,date:$('aDate').value,time:$('aTime').value,by:$('aBy').value,status:'Booked',notes:$('aNotes').value.trim(),created:TODAY});
+ if(['New','Contacted','Replied'].includes(l.status))l.status='Booked';$('aNotes').value='';$('apptAdd').open=false;act('Appointment booked with '+l.biz)});
+$('dealForm').addEventListener('submit',e=>{e.preventDefault();const l=lead($('dLead').value);if(!l)return;
+ const d={id:uid(),lead:l.id,offer:$('dOffer').value,by:$('dBy').value,setup:Math.max(0,+$('dSetup').value||0),monthly:Math.max(0,+$('dMonthly').value||0),stage:$('dStage').value,date:TODAY,review:false,referral:false};
+ B().deals.push(d);closeDeal(d);$('dealAdd').open=false;act(isClosed(d)?`Closed: ${l.biz}. ${gbp(d.setup*.2)} to the Freedom Fund`:'Proposal saved: '+l.biz)});
+$('leadFilter').addEventListener('change',renderLeads);
+$('v-biz').addEventListener('change',e=>{const t=e.target.closest('[data-set]');if(!t)return;const [col,id,f]=t.dataset.set.split(':');const o=B()[col].find(x=>x.id===id);if(!o)return;
+ o[f]=t.type==='checkbox'?t.checked:t.value;let msg='Updated';
+ if(col==='deals'&&f==='stage'){closeDeal(o);if(isClosed(o))msg=`Closed: ${bname(o.lead)}. Build created for Jack`}
+ if(col==='builds'&&f==='stage'&&o.stage==='Live'){o.live=o.live||TODAY;msg='Live! Client added to the Client Hub'}
+ if(col==='appts'&&f==='status')msg='Appointment '+o.status.toLowerCase();
+ act(msg)});
+$('v-biz').addEventListener('click',e=>{
+ const s=e.target.closest('[data-sub]');if(s){setSub(s.dataset.sub);return}
+ const c=e.target.closest('[data-copy]');if(c){const txt=$('sc-'+c.dataset.copy).textContent;try{navigator.clipboard.writeText(txt).then(()=>toast('Copied'),()=>toast('Press and hold the text to copy'))}catch(x){toast('Press and hold the text to copy')}return}
+ const a=e.target.closest('[data-act]');if(!a)return;const [k,x,y,z]=a.dataset.act.split(':');
+ if(k==='book'){setSub('appts');$('aLead').value=x;$('apptAdd').open=true;$('apptAdd').scrollIntoView({block:'start'})}
+ if(k==='deal'){setSub('pipe');$('dLead').value=x;$('dBy').value=y;$('dealAdd').open=true;$('dealAdd').scrollIntoView({block:'start'})}
+ if(k==='del'){const arr=B()[x],i=arr.findIndex(o=>o.id===y);if(i>-1){const [gone]=arr.splice(i,1);if(x==='deals')B().builds=B().builds.filter(b=>b.deal!==gone.id);save();render();toast('Deleted')}}
+});
+document.querySelectorAll('[data-out]').forEach(b=>b.addEventListener('click',()=>{B().out.push({date:TODAY,mid:S.me,n:+b.dataset.out});act(`+${b.dataset.out} contacts logged`)}));
+$('clearSample').addEventListener('click',()=>{if(!clearArm){clearArm=true;$('clearSample').textContent='Tap again to clear';setTimeout(()=>{clearArm=false;$('clearSample').textContent='Clear sample, start for real'},4000);return}
+ S.biz={sample:false,leads:[],appts:[],deals:[],builds:[],out:[]};save();render();toast('Sample cleared. Business HQ is ready for real data')});
+
+// setup
+$('tabs').innerHTML=TABS.map(([k,l,p])=>`<a href="#${k}" data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>${l}</a>`).join('');
+const opts=M.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+$('who').innerHTML=opts;$('fMember').innerHTML=M.map(m=>`<option value="${m.id}">${m.id}</option>`).join('');$('tMember').innerHTML=opts;$('wallWho').innerHTML='<option value="">Whole team</option>'+opts;
+$('fHabits').innerHTML=H.map(([k,l])=>`<button class="hb" data-h="${k}" type="button"><span class="t">${l}</span><span class="s">FALSE</span></button>`).join('');
+$('who').value=S.me;$('fMember').value=S.me;$('tMember').value=S.me;$('fDate').value=TODAY;$('fDate').max=TODAY;
+
+function route(){let v=(location.hash||'#hq').slice(1);if(v.startsWith('biz')){const k=v.slice(4);if(SUBS.some(x=>x[0]===k))sub=k;v='biz';renderBiz()}if(v==='hall')v='team';const ok=TABS.some(t=>t[0]===v)?v:'hq';
+ document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+ok));
+ document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===ok))}
+addEventListener('hashchange',()=>{route();scrollTo(0,0)});
+
+$('who').addEventListener('change',e=>{S.me=e.target.value;$('fMember').value=S.me;$('tMember').value=S.me;save();render();loadForm()});
+$('mission').addEventListener('click',e=>{const b=e.target.closest('.hb');if(!b)return;let r=rowOf(S.me,TODAY);
+ if(!r){r={date:TODAY,mid:S.me,notes:''};H.forEach(([k])=>r[k]=false);S.rows.push(r)}
+ r[b.dataset.h]=!r[b.dataset.h];save();render();loadForm();
+ if(r[b.dataset.h])toast(bricks(r)===6?'Six bricks. Wall complete today.':'Un ladrillo más. +1 brick')});
+$('fHabits').addEventListener('click',e=>{const b=e.target.closest('.hb');if(!b)return;b.classList.toggle('done');b.querySelector('.s').textContent=b.classList.contains('done')?'TRUE':'FALSE';calcForm()});
+$('fMember').addEventListener('change',loadForm);$('fDate').addEventListener('change',loadForm);
+$('bform').addEventListener('submit',e=>{e.preventDefault();const mid=$('fMember').value,date=$('fDate').value;if(!date)return;
+ let r=rowOf(mid,date);if(!r){r={date,mid};S.rows.push(r)}
+ $('fHabits').querySelectorAll('.hb').forEach(b=>r[b.dataset.h]=b.classList.contains('done'));r.notes=$('fNotes').value.trim();
+ save();render();toast(`Saved: ${bricks(r)} brick${bricks(r)===1?'':'s'} for ${mid}`)});
+$('fDel').addEventListener('click',()=>{const i=S.rows.findIndex(r=>r.mid===$('fMember').value&&r.date===$('fDate').value);if(i<0){toast('No row on that date');return}S.rows.splice(i,1);save();render();loadForm();toast('Row deleted')});
+$('tbl').addEventListener('click',e=>{const tr=e.target.closest('tr.click');if(!tr)return;$('fMember').value=tr.dataset.m;$('fDate').value=tr.dataset.d;loadForm();$('bform').scrollIntoView({behavior:'smooth',block:'start'})});
+$('wallWho').addEventListener('change',renderWall);
+$('baseForm').addEventListener('submit',e=>{e.preventDefault();S.base={freedom:Math.max(0,Math.round(+$('baseF').value||0)),legacy:Math.max(0,Math.round(+$('baseL').value||0))};save();render();toast('Starting balances saved')});
+$('tform').addEventListener('submit',e=>{e.preventDefault();const amt=Math.round(+$('tAmt').value);if(!(amt>0)){toast('Enter an amount');return}
+ S.tx.push({date:TODAY,fund:$('tFund').value,mid:$('tMember').value,amt,note:$('tNote').value.trim(),ts:Date.now()});$('tNote').value='';save();render();toast('+'+gbp(amt)+' to '+FUNDS[$('tFund').value].name)});
+let resetArm=false;$('reset').addEventListener('click',()=>{if(!resetArm){resetArm=true;$('reset').textContent='Tap again to clear everything';setTimeout(()=>{resetArm=false;$('reset').textContent='Clear all data'},4000);return}S=seed();S.biz=EMPTYBIZ();save();$('who').value=S.me;render();loadForm();toast('All data cleared')});
+
+render();loadForm();route();$('baseF').value=S.base?.freedom||'';$('baseL').value=S.base?.legacy||'';
+}
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body>
+</html>
