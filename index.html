@@ -172,7 +172,8 @@ th{color:var(--mute);font-weight:600}td.n,th.n{text-align:right}
    <div class="seg" id="todaySeg"></div>
    <div class="bricks" id="hqBricks"></div>
   </div>
-  <div class="card" id="hqSpanish"></div>
+  <div class="card"><h3>Legacy Intelligence</h3><div id="hqIntel" style="margin-top:6px"></div></div>
+ <div class="card" id="hqSpanish"></div>
   <div class="stats" id="hqStats"></div>
   <div class="card"><div class="row"><h3>My wall</h3><a href="#wall" class="lbl">See it all</a></div><div class="wall" id="hqWall"></div></div>
   <div class="card"><h3>Team today</h3><div id="teamToday" style="margin-top:6px"></div><p class="note">Shows this phone's records only, until team syncing is switched on.</p></div>
@@ -354,7 +355,7 @@ function lessonExercises(node){
  } else ex.push(...mixed(shuffle(items),14));
  return ex;
 }
-function speakType(){return DICT?'speak':canAudio()?'hear':'type'}
+function speakType(){return DICT&&!micBlocked?'speak':canAudio()?'hear':'type'}
 function mixed(items,n){const types=['mc','mcEn','build','type',canAudio()?'listen':'mc',speakType(),'build','type'];const ex=[];
  for(let i=0;i<n;i++){const t=types[i%types.length];ex.push(mkEx(t,items[i%items.length]))}
  if(items.length>=4)ex.splice(Math.floor(n/2),0,mkEx('match',null,{set:items.slice(0,4)}));return shuffle(ex)}
@@ -362,13 +363,19 @@ function mixed(items,n){const types=['mc','mcEn','build','type',canAudio()?'list
 // ---------- lesson engine ----------
 let L=null;
 function startLesson(node,practice){
- const ex=practice?practiceEx():lessonExercises(node);if(!ex.length){toast('Finish a lesson first, then practice it here');return}
- L={node,practice,ex,i:0,first:0,graded:0,missed:new Set(),secs:0,last:Date.now(),state:'ask',cur:null};
- $('lesson').classList.add('on');document.body.style.overflow='hidden';renderEx();
+ const p=P(),key=practice?'practice':node.id,c=p.cur;
+ if(c&&c.key===key&&c.i<c.ex.length){L={node,practice,ex:c.ex,i:c.i,first:c.first,graded:c.graded,missed:new Set(c.missed),secs:c.secs,flushed:c.secs,last:Date.now(),state:'ask',cur:null,key};toast('Welcome back. Picking up where you left off')}
+ else{const ex=practice?practiceEx():lessonExercises(node);if(!ex.length){toast('Finish a lesson first, then practice it here');return}
+  L={node,practice,ex,i:0,first:0,graded:0,missed:new Set(),secs:0,flushed:0,last:Date.now(),state:'ask',cur:null,key}}
+ $('lesson').classList.add('on');document.body.style.overflow='hidden';renderEx();persist();
 }
+function flush(){if(!L)return;const p=P(),d=L.secs-L.flushed;if(d>0){p.secs+=d;const lg=p.log[TODAY]||(p.log[TODAY]={xp:0,secs:0,lessons:0});lg.secs+=d;L.flushed=L.secs}}
+function persist(){if(!L||L.state==='end')return;flush();P().cur={key:L.key,ex:L.ex.map(x=>{const y=Object.assign({},x);delete y.sel;return y}),i:L.state==='fb'?L.i+1:L.i,first:L.first,graded:L.graded,missed:[...L.missed],secs:L.secs};save()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)persist()});
+addEventListener('pagehide',()=>persist());
 function practiceEx(){const p=P();const seen=ALL.filter(it=>p.items[it[0]]);if(seen.length<4)return[];
  const pick=seen.sort((a,b)=>(p.items[a[0]].s-p.items[b[0]].s)||(p.items[a[0]].seen||'').localeCompare(p.items[b[0]].seen||'')).slice(0,8);return mixed(shuffle(pick),10)}
-setInterval(()=>{if(L&&L.state!=='end'&&!document.hidden&&Date.now()-L.last<60000)L.secs++},1000);
+setInterval(()=>{if(L&&L.state!=='end'&&!document.hidden&&Date.now()-L.last<60000){L.secs++;if(L.secs%15===0)persist()}},1000);
 document.addEventListener('pointerdown',()=>{if(L)L.last=Date.now()},{passive:true});
 document.addEventListener('keydown',()=>{if(L)L.last=Date.now()});
 function setBtn(text,enabled){const b=$('lbtn');b.textContent=text;b.disabled=!enabled}
@@ -412,20 +419,20 @@ function grade(ok,e,note){
  else{L.missed.add(key);L.ex.push(Object.assign({},e,{retry:true,picked:[],heard:''}));
   foot('bad',`<b>Not quite</b><div style="margin-top:4px">Correct answer: <b style="font-size:17px;color:var(--ink)">${esc(e.answer)}</b>${e.it&&e.type!=='mc'?'':''}</div>${e.it?`<div class="lbl">${esc(e.it[0])} = ${esc(e.it[1])}</div>`:''}${SAMPLE&&e.it?`<button class="btn" type="button" id="whyBtn" style="min-height:40px;font-size:14px;margin-top:8px">Why? Ask Profe</button><div id="whyOut" class="lbl" style="margin-top:6px;white-space:pre-wrap"></div>`:''}<div class="note">You'll get this one again before the end.</div>`)}
  if(e.it&&canAudio())say(e.it[0]);
- setBtn('Continue',true);
+ setBtn('Continue',true);persist();
 }
 function check(){
  const e=L.ex[L.i];
  if(e.type==='mc'||e.type==='mcEn'||e.type==='listen'){grade(L.cur===e.answer,e);return}
  if(e.type==='build'){const g=e.picked.map(i=>e.pool[i]).join(' ');const r=checkText(g,e.answer);grade(r.ok,e,r.note);return}
  if(e.type==='type'||e.type==='hear'){const r=checkText($('typed').value,e.answer);grade(r.ok,e,r.note);return}
- if(e.type==='speak'){const sim=1-lev(plain(e.heard),plain(e.answer))/Math.max(plain(e.answer).length,1);grade(sim>=.7,e,sim>=.7?`I heard: "${e.heard}"`:'');if(sim<.7)$('fb').insertAdjacentHTML('afterbegin',`<div class="lbl">I heard: "${esc(e.heard)}"</div>`);return}
+ if(e.type==='speak'){const sim=speakScore(e.heard,e.answer);grade(sim>=.7,e,sim>=.7?`I heard: "${e.heard}"`:'');if(sim<.7)$('fb').insertAdjacentHTML('afterbegin',`<div class="lbl">I heard: "${esc(e.heard)}"</div>`);return}
 }
-function next(){L.i++;if(L.i>=L.ex.length)finish();else renderEx()}
+function next(){L.i++;if(L.i>=L.ex.length)finish();else{renderEx();persist()}}
 function finish(){
  L.state='end';const p=P(),n=L.node;const acc=L.graded?Math.round(L.first/L.graded*100):100;
- const xp=L.practice?10:n.kind==='review'?20:15;p.xp+=xp;p.secs+=L.secs;
- const lg=p.log[TODAY]||(p.log[TODAY]={xp:0,secs:0,lessons:0});lg.xp+=xp;lg.secs+=L.secs;lg.lessons++;
+ flush();delete p.cur;const xp=L.practice?10:n.kind==='review'?20:15;p.xp+=xp;
+ const lg=p.log[TODAY]||(p.log[TODAY]={xp:0,secs:0,lessons:0});lg.xp+=xp;lg.lessons++;
  if(!L.practice&&n&&!p.done[n.id])p.done[n.id]={date:TODAY,acc};
  const r=ensureRow(S.me,TODAY);const fresh=!r.sp;r.sp=true;const tag=`Spanish: ${L.practice?'practice':n.t}`;if(!(r.notes||'').includes(tag))r.notes=(r.notes?r.notes+'; ':'')+tag;
  save();$('lprog').style.width='100%';foot('');
@@ -439,7 +446,7 @@ function finish(){
 function closeLesson(){$('lesson').classList.remove('on');document.body.style.overflow='';try{speechSynthesis.cancel()}catch(e){}if(DICT&&L&&L.listening)DICT.stop().catch(()=>{});L=null;renderAll()}
 $('lbtn').addEventListener('click',()=>{if(!L)return;if(L.state==='end'){closeLesson();return}if(L.state==='intro'){const it=L.ex[L.i].it;const p=P();if(!p.items[it[0]])p.items[it[0]]={s:0,ok:0,bad:0,seen:TODAY};next();return}if(L.state==='fb'){next();return}check()});
 let leaveArm=false;
-$('lx').addEventListener('click',()=>{if(!L||L.state==='end'){closeLesson();return}if(!leaveArm){leaveArm=true;toast('Leave? Progress in this lesson will be lost. Tap ✕ again');setTimeout(()=>leaveArm=false,3000);return}leaveArm=false;closeLesson()});
+$('lx').addEventListener('click',()=>{if(!L||L.state==='end'){closeLesson();return}persist();closeLesson();toast('Saved. Pick up where you left off any time')});
 $('lbody').addEventListener('click',e=>{if(!L||L.state!=='ask')return;const ex=L.ex[L.i];
  const o=e.target.closest('[data-opt]');if(o){$('lbody').querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===o));L.cur=o.dataset.opt;setBtn('Check',true);if(ex.type==='mcEn'&&canAudio())say(o.dataset.opt);return}
  const t=e.target.closest('[data-tile]');if(t){const i=+t.dataset.tile;ex.picked.push(i);t.classList.add('used');drawAns(ex);return}
@@ -463,15 +470,29 @@ function matchTap(ex,b){
 }
 async function micTap(ex){
  if(!DICT)return;
- if(L.listening){L.listening=false;try{await DICT.stop()}catch(e){}return}
- ex.heard='';$('heard').textContent='Listening…';$('micBtn').classList.add('on');L.listening=true;
- DICT.start().catch(err=>{L.listening=false;$('micBtn')?.classList.remove('on');$('heard').textContent=err&&err.code==='not_granted'?'Microphone not allowed. Use the button below.':'Tap the mic to try again'});
+ if(L.listening){L.listening=false;$('heard').textContent='Checking…';try{await DICT.stop()}catch(e){}return}
+ try{speechSynthesis.cancel()}catch(e){}
+ ex.heard='';ex.partial='';setBtn('Check',false);$('heard').textContent='Listening… say it now';$('micBtn').classList.add('on');L.listening=true;
+ DICT.start().catch(err=>{L.listening=false;micFail(ex,err&&(err.code||err.error));});
 }
+function micFail(ex,reason){
+ $('micBtn')?.classList.remove('on');ex.fails=(ex.fails||0)+1;const h=$('heard');
+ const blocked=['not_granted','not-allowed','service-not-allowed','audio-capture'].includes(reason);
+ if(blocked||ex.fails>=3){if(h)h.textContent=blocked?'Your phone blocked the microphone here.':'Still not catching it.';toast(blocked?'Mic blocked. Switching to a listening exercise':'Switching to a listening exercise');setTimeout(()=>{if(L&&L.ex[L.i]===ex){L.ex[L.i]=mkEx('hear',ex.it);renderEx()}},1200);if(blocked)micBlocked=true;return}
+ if(h)h.textContent=reason==='no-speech'?"Didn't hear anything. Tap the mic and speak a bit louder.":"Didn't catch that. Tap the mic and try again.";
+}
+let micBlocked=false;
 function bindDict(){
- DICT.onPartial(({text})=>{if(L&&L.listening){const h=$('heard');if(h)h.textContent=text}});
- DICT.onFinal(({text})=>{if(!L)return;const ex=L.ex[L.i];if(ex.type!=='speak')return;ex.heard=(ex.heard+' '+text).trim();const h=$('heard');if(h)h.textContent='"'+ex.heard+'"';setBtn('Check',!!ex.heard)});
- DICT.onState(({state})=>{if(state==='idle'&&L){L.listening=false;$('micBtn')?.classList.remove('on')}});
+ DICT.onPartial(({text})=>{if(!L||!L.listening)return;const ex=L.ex[L.i];if(ex.type!=='speak')return;ex.partial=text;const h=$('heard');if(h)h.textContent=text});
+ DICT.onFinal(({text})=>{if(!L)return;const ex=L.ex[L.i];if(ex.type!=='speak')return;ex.heard=(ex.heard+' '+text).trim();ex.partial='';const h=$('heard');if(h)h.textContent='"'+ex.heard+'"';setBtn('Check',!!ex.heard)});
+ DICT.onState(({state,reason})=>{if(state!=='idle'||!L)return;const ex=L.ex[L.i];L.listening=false;$('micBtn')?.classList.remove('on');if(ex.type!=='speak')return;
+  if(!ex.heard&&ex.partial){ex.heard=ex.partial;ex.partial=''}
+  if(ex.heard){const h=$('heard');if(h)h.textContent='"'+ex.heard+'"';setBtn('Check',true)}
+  else micFail(ex,reason)});
 }
+const NUMW={0:'cero',1:'uno',2:'dos',3:'tres',4:'cuatro',5:'cinco',6:'seis',7:'siete',8:'ocho',9:'nueve',10:'diez',11:'once',15:'quince',20:'veinte',50:'cincuenta',100:'cien',1000:'mil'};
+const spoken=s=>plain(String(s).replace(/\d+/g,n=>NUMW[+n]||n));
+function speakScore(heard,target){const h=spoken(heard),t=spoken(target);if(!h)return 0;if(h.includes(t))return 1;return 1-lev(h,t)/Math.max(t.length,h.length,1)}
 
 // ---------- Profe (Claude) ----------
 const profe={mode:'ask',scene:'At a bar in Spain',msgs:[]};
@@ -509,7 +530,7 @@ function renderHQ(){
  $('hqBricks').innerHTML=H.map(([k,l])=>brickBtn(r,k,l,'hq')).join('');
  const ni=nextIdx(),nd=NODES[ni],lg=dayLog(TODAY);
  $('hqSpanish').innerHTML=`<div class="goal">${ring(lg.lessons?1:Math.min(lg.secs/300,.9))}<div style="flex:1"><h3>Spanish class</h3><div class="lbl">${lg.lessons?`Today's goal done · ${Math.max(1,mins(lg.secs))} min`:'Today: finish one lesson to lay your Spanish brick'}</div></div></div>
-  ${nd?`<div class="lbl" style="margin-top:10px">Next: Unit ${nd.ui+1} · ${esc(nd.t)}</div><button class="btn p full" style="margin-top:8px" data-start="${ni}" type="button">${lg.lessons?'Keep going':'Start lesson'}</button>`:'<p>Course complete. ¡Enhorabuena!</p>'}`;
+  ${nd?`<div class="lbl" style="margin-top:10px">Next: Unit ${nd.ui+1} · ${esc(nd.t)}</div><button class="btn p full" style="margin-top:8px" data-start="${ni}" type="button">${P().cur&&P().cur.key===nd.id?'Continue where you left off':lg.lessons?'Keep going':'Start lesson'}</button>`:'<p>Course complete. ¡Enhorabuena!</p>'}`;
  $('hqStats').innerHTML=[[streak(m.id)+'d','brick streak'],[total(m.id).toLocaleString('en-GB'),'lifetime bricks'],[mins(P().secs)+' min','Spanish studied']].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
  wall($('hqWall'),m.id,8);
  $('teamToday').innerHTML=M.map(x=>{const rr=rowOf(x.id,TODAY),b=rr?bricks(rr):0;return`<div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span style="display:flex;gap:10px;align-items:center"><span class="av" style="background:${x.col};width:30px;height:30px;font-size:14px">${x.name[0]}</span>${x.name}</span><span class="num">${b}/6</span></div>`}).join('');
@@ -529,9 +550,9 @@ function renderSpanish(){
  const ni=nextIdx();
  $('es-path').innerHTML=COURSE.map((u,ui)=>{const nodes=NODES.map((n,i)=>[n,i]).filter(([n])=>n.ui===ui);const dn=nodes.filter(([n])=>isDone(n.id)).length;
   return`<div class="unit"><h3><span>Unit ${ui+1}: ${esc(u.t)}</span><span class="lbl">${dn}/${nodes.length}</span></h3><div class="lbl">${esc(u.d)}</div><div class="path">${nodes.map(([n,i])=>{const st=isDone(n.id)?'done':i===ni?'next':unlocked(i)?'':'lockd';
-   return`<button class="node ${st}" type="button" ${st==='lockd'?'disabled':''} data-start="${i}"><span class="bk">${st==='done'?'✓':n.kind==='review'?'★':i-nodes[0][1]+1}</span><span><span class="t">${esc(n.t)}</span><div class="lbl">${st==='done'?`Done · ${p.done[n.id].acc}% first try`:st==='lockd'?'Locked: finish the one before':n.kind==='review'?'Mixed review':n.items.slice(0,3).map(x=>esc(x[0])).join(', ')+'…'}</div></span><span class="lbl">${st==='next'?'Start':''}</span></button>`}).join('')}</div></div>`}).join('')+'<p class="note">No skipping ahead: each lesson unlocks when you finish the one before. Mistakes come back until you get them right.</p>';
+   return`<button class="node ${st}" type="button" ${st==='lockd'?'disabled':''} data-start="${i}"><span class="bk">${st==='done'?'✓':n.kind==='review'?'★':i-nodes[0][1]+1}</span><span><span class="t">${esc(n.t)}</span><div class="lbl">${st==='done'?`Done · ${p.done[n.id].acc}% first try`:st==='lockd'?'Locked: finish the one before':n.kind==='review'?'Mixed review':n.items.slice(0,3).map(x=>esc(x[0])).join(', ')+'…'}</div></span><span class="lbl">${p.cur&&p.cur.key===n.id?`Resume ${p.cur.i}/${p.cur.ex.length}`:st==='next'?'Start':''}</span></button>`}).join('')}</div></div>`}).join('')+'<p class="note">No skipping ahead: each lesson unlocks when you finish the one before. Mistakes come back until you get them right.</p>';
  const seen=ALL.filter(it=>p.items[it[0]]),weak=seen.filter(it=>p.items[it[0]].s<3);
- $('es-practice').innerHTML=`<div class="card"><h3>Practise your weak words</h3><p class="lbl">${seen.length<4?'Finish your first lesson to unlock practice.':`${weak.length} words need work. Practice counts towards today's goal.`}</p><button class="btn p full" data-practice="1" type="button" ${seen.length<4?'disabled':''}>Start practice</button></div>
+ $('es-practice').innerHTML=`<div class="card"><h3>Practise your weak words</h3><p class="lbl">${seen.length<4?'Finish your first lesson to unlock practice.':`${weak.length} words need work. Practice counts towards today's goal.`}</p><button class="btn p full" data-practice="1" type="button" ${seen.length<4?'disabled':''}>${p.cur&&p.cur.key==='practice'?'Resume practice':'Start practice'}</button></div>
   <div class="card"><h3>Words you've met</h3><div style="margin-top:6px">${seen.length?seen.sort((a,b)=>p.items[a[0]].s-p.items[b[0]].s).map(it=>{const s=p.items[it[0]].s;return`<div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span style="display:flex;gap:8px;align-items:center">${canAudio()?`<button class="spk slow" style="width:40px;height:40px" data-say="${esc(it[0])}" type="button" aria-label="Play">${SPK}</button>`:''}<span><b>${esc(it[0])}</b><div class="lbl">${esc(it[1])}</div></span></span><span style="display:flex;gap:2px" aria-label="Strength ${s} of 5">${[1,2,3,4,5].map(k=>`<i style="width:8px;height:16px;border-radius:2px;background:${k<=s?(s>=4?'var(--green)':'var(--gold)'):'var(--mortar)'}"></i>`).join('')}</span></div>`}).join(''):'<p class="lbl">None yet.</p>'}</div></div>`;
  if(!$('es-sounds').innerHTML)$('es-sounds').innerHTML=`<div class="card"><h3>Sounds of Spanish</h3><p class="lbl">Spain Spanish. Tap a word to hear it, then say it back out loud.</p>${SOUNDS.map(([t,d,w])=>`<div class="snd"><b>${esc(t)}</b><div class="lbl">${esc(d)}</div><div>${w.map(x=>canAudio()?`<button class="chip" data-say="${esc(x)}" type="button">${SPK.replace('26','18').replace('26','18')} ${esc(x)}</button>`:`<span class="chip">${esc(x)}</span>`).join('')}</div></div>`).join('')}</div>`;
  drawProfe();
@@ -559,9 +580,38 @@ function renderWall(){
 }
 function renderMe(){const m=me();$('meAv').textContent=m.name[0];$('meAv').style.background=m.col;$('meName').textContent=m.name;
  $('whoPick').innerHTML=M.map(x=>`<button type="button" data-who="${x.id}" class="${x.id===S.me?'on':''}"><span class="av" style="background:${x.col};width:48px;height:48px;font-size:22px">${x.name[0]}</span>${x.name}</button>`).join('')}
-function renderAll(){renderMe();renderHQ();renderBricks();renderSpanish();renderWall()}
+function renderAll(){renderMe();renderHQ();renderIntelPhone();renderBricks();renderSpanish();renderWall()}
 function route(){const v=(location.hash||'#hq').slice(1);const ok=TABS.some(t=>t[0]===v)?v:'hq';document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+ok));document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===ok))}
 addEventListener('hashchange',()=>{route();scrollTo(0,0)});
+
+
+// ---------- LEGACY INTELLIGENCE (phone) ----------
+const wkStartOf=s=>{const w=new Date(s+'T12:00').getDay();return addD(s,-((w+6)%7))};
+const weekSum=(ws,mid,upto)=>{let t=0;const d=byDay(mid);for(let i=0;i<(upto||7);i++)t+=d[addD(ws,i)]||0;return t};
+function intelPhone(){
+ const out=[],add=(status,title,detail)=>out.push({status,title,detail});const m=me();
+ const ws=wkStartOf(TODAY),lws=addD(ws,-7),el=Math.round((new Date(TODAY+'T12:00')-new Date(ws+'T12:00'))/864e5)+1;
+ const mine=weekSum(ws,m.id),due=4*el,lastSame=weekSum(lws,m.id,el);
+ if(!total(m.id))add('info','Your wall starts today','Lay your first brick. Insights build up as you go.');
+ else{
+  add(mine>=due?'good':'warn',`You: ${mine} bricks this week`,`Target by today is ${due} (4 a day, 28 a week). ${mine>=due?'Ahead of pace.':`${due-mine} to catch up.`}`);
+  if(lastSame||mine)add(mine>=lastSame?'good':'warn',mine>=lastSame?`Up on last week (${mine} vs ${lastSame})`:`Behind last week's pace (${mine} vs ${lastSame})`,`Same point last week. Last week you finished on ${weekSum(lws,m.id)}.`);
+  const st=streak(m.id);add(st>0?'good':'info',st>0?`${st}-day brick streak`:'Start a new streak today','One brick a day keeps it going. Returning is a win.');
+  const hw=H.map(([k,l])=>[l,S.rows.filter(r=>r.mid===m.id&&r[k]&&r.date>=ws).length]).sort((a,b)=>a[1]-b[1]);
+  if(hw[5][1])add('info',`Weakest this week: ${hw[0][0]} (${hw[0][1]})`,`Strongest: ${hw[5][0]} (${hw[5][1]}).`);
+ }
+ const team=weekSum(ws);if(team)add('info',`Team: ${team} bricks this week`,`Target ${4*el*M.length} by today, ${4*7*M.length} for the week. Counts bricks saved on this phone.`);
+ const p=P(),lw=Object.entries(p.log).filter(([d])=>d>=ws),les=lw.reduce((a,[,v])=>a+v.lessons,0),mn=Math.round(lw.reduce((a,[,v])=>a+v.secs,0)/60);
+ const done=Object.keys(p.done).length,left=NODES.length-done;
+ const rate=Object.entries(p.log).filter(([d])=>d>=addD(TODAY,-13)).reduce((a,[,v])=>a+v.lessons,0)/2;
+ add(les>=Math.min(el,5)?'good':les?'info':'warn',`Spanish: ${les} lesson${les===1?'':'s'}, ${mn} min this week`,done?`${done} of ${NODES.length} lessons done, ${learned()} words learned.${rate&&left?` At ${rate.toFixed(1)} a week you'll finish the course around ${new Date(Date.now()+left/rate*7*864e5).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}.`:''}`:'Your first lesson takes about 5 minutes.');
+ add('info',`${Math.round((new Date('2028-05-01T12:00')-new Date(TODAY+'T12:00'))/864e5)} days to May 2028`,'Un ladrillo más.');
+ return out;
+}
+const ST={good:['On track','var(--green)'],warn:['Needs a push','var(--gold2)'],info:['Update','var(--mute)']};
+function renderIntelPhone(){const el=$('hqIntel');if(!el)return;const d=intelPhone();
+ el.innerHTML=d.map(x=>`<div style="padding:10px 0;border-top:1px solid var(--line)"><div style="display:flex;gap:10px;align-items:baseline"><b style="flex:1">${esc(x.title)}</b><span style="flex:none;font-size:12px;font-weight:800;color:${ST[x.status][1]};white-space:nowrap">${ST[x.status][0]}</span></div><div class="lbl">${esc(x.detail)}</div></div>`).join('')}
+setInterval(()=>{try{renderIntelPhone()}catch(e){}},60000);
 
 // ---------- events ----------
 document.addEventListener('click',e=>{
@@ -586,11 +636,13 @@ $('whoDone').addEventListener('click',()=>{if(!S.me){S.me='JACK'}save();$('whoSh
 // ---------- capabilities ----------
 function webDict(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;let rec=null,cbP,cbF,cbS;
  return{onPartial(f){cbP=f},onFinal(f){cbF=f},onState(f){cbS=f},
-  start(){return new Promise((res,rej)=>{try{rec=new SR();rec.lang='es-ES';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-   rec.onstart=()=>{cbS&&cbS({state:'listening'});res()};
-   rec.onresult=e=>{let fin='',part='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else part+=r[0].transcript}if(part&&cbP)cbP({text:part});if(fin&&cbF)cbF({text:fin})};
-   rec.onerror=e=>{cbS&&cbS({state:'idle',reason:e.error});if(e.error==='not-allowed'||e.error==='service-not-allowed')rej({code:'not_granted'})};
-   rec.onend=()=>{cbS&&cbS({state:'idle',reason:'stopped'})};rec.start()}catch(x){rej(x)}})},
+  start(){return new Promise((res,rej)=>{let started=false,gotFinal=false,last='',err='';
+   try{if(rec){try{rec.abort()}catch(e){}}rec=new SR();rec.lang='es-ES';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+    rec.onstart=()=>{started=true;cbS&&cbS({state:'listening'});res()};
+    rec.onresult=e=>{let fin='',part='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else part+=r[0].transcript}if(part){last=part;cbP&&cbP({text:part})}if(fin){gotFinal=true;last='';cbF&&cbF({text:fin})}};
+    rec.onerror=e=>{err=e.error||'error';if(!started)rej({code:err})};
+    rec.onend=()=>{if(!gotFinal&&last)cbF&&cbF({text:last});if(started)cbS&&cbS({state:'idle',reason:err||'stopped'});else if(!err)rej({code:'no-start'})};
+    rec.start()}catch(x){rej({code:x&&x.name==='NotAllowedError'?'not-allowed':'error'})}})},
   stop(){try{rec&&rec.stop()}catch(e){}return Promise.resolve()}}}
 if(!window.claude){DICT=webDict();if(DICT)bindDict()}
 

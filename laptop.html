@@ -207,7 +207,7 @@ nav.tabs a.on{box-shadow:inset 0 -3px 0 var(--gold);background:transparent}}
   <h2 style="margin:28px 0 12px">Builders</h2>
   <div class="grid g3" id="builders"></div>
   <div class="grid g2" style="margin-top:16px">
-   <div class="card"><h3>Legacy intelligence</h3><ul class="feed" id="intel"></ul></div>
+   <div class="card"><div class="row"><h3>Legacy Intelligence</h3><a href="#intel" class="lbl" style="color:var(--gold2)">See it all</a></div><ul class="feed" id="intel"></ul></div>
    <div class="card"><h3>Recent timeline</h3><ul class="feed" id="timeline"></ul></div>
   </div>
   <div class="oath">
@@ -363,6 +363,18 @@ nav.tabs a.on{box-shadow:inset 0 -3px 0 var(--gold);background:transparent}}
   </div>
  </section>
 
+<!-- INTEL -->
+ <section class="view" id="v-intel">
+  <div class="row" style="margin-bottom:12px"><h2>Legacy Intelligence</h2><span class="lbl" id="intelTime"></span></div>
+  <p class="lbl" style="margin:-4px 0 14px">Where you stand right now: bricks, business, money and the road to May 2028. Updates as you go.</p>
+  <div class="tiles" id="intelKpis"></div>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="card"><h3>Team bricks per week</h3><p class="lbl" style="margin:2px 0 0">Last 8 weeks, Monday to Sunday</p><div id="intelWeeks"></div></div>
+   <div class="card"><h3>Builders this week</h3><div class="scroll" style="margin-top:8px"><table id="intelPeople"></table></div><p class="note">Target 28 bricks each a week (4 a day).</p></div>
+  </div>
+  <div class="grid g2" id="intelFeed" style="margin-top:4px"></div>
+ </section>
+
  <!-- WALL -->
  <section class="view" id="v-wall">
   <div class="row"><h2>The Legacy Wall</h2>
@@ -424,7 +436,7 @@ nav.tabs a.on{box-shadow:inset 0 -3px 0 var(--gold);background:transparent}}
 const H=[['sp','Spanish'],['biz','Online Skill/Business'],['tr','Training'],['co','Content'],['re','Reading'],['bu','Budget']];
 const M=[{id:'JACK',name:'Jack',col:'#e8a83e',note:'Founder, primary stakeholder'},{id:'LEO',name:'Leo',col:'#ec7f45',note:'Founder, appointment setting'},{id:'MICHAEL',name:'Michael',col:'#a58be0',note:'Founder, AI automation'}];
 const FUNDS={freedom:{name:'Freedom Fund',goal:45000,base:0,col:'var(--blue)'},legacy:{name:'Legacy Fund',goal:30000,base:0,col:'var(--purple)'}};
-const TABS=[['hq','HQ','M3 11l9-7 9 7v9h-6v-6H9v6H3z'],['build','Bricks','M3 14h8v6H3zM13 14h8v6h-8zM8 6h8v6H8z'],['biz','Business','M3 8h18v12H3zM8 8V5h8v3M3 13h18'],['wall','Wall','M2 4h20v16H2zM2 9h20M2 15h20M9 4v5M15 9v6M9 15v5'],['funds','Funds','M4 7h16v12H4zM4 11h16M15 15h2'],['team','Team','M8 11a3 3 0 100-6 3 3 0 000 6zM16 11a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15c3 0 8 1 8 5']];
+const TABS=[['hq','HQ','M3 11l9-7 9 7v9h-6v-6H9v6H3z'],['intel','Intel','M3 12h4l3-7 4 14 3-7h4'],['build','Bricks','M3 14h8v6H3zM13 14h8v6h-8zM8 6h8v6H8z'],['biz','Business','M3 8h18v12H3zM8 8V5h8v3M3 13h18'],['wall','Wall','M2 4h20v16H2zM2 9h20M2 15h20M9 4v5M15 9v6M9 15v5'],['funds','Funds','M4 7h16v12H4zM4 11h16M15 15h2'],['team','Team','M8 11a3 3 0 100-6 3 3 0 000 6zM16 11a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15c3 0 8 1 8 5']];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 const TODAY=iso(new Date());
@@ -495,14 +507,7 @@ function renderHQ(){
  const active=M.filter(m=>span(m.id,0,7)>0).length;
  $('snap').innerHTML=[['Today',todayT+'/18'],['Lifetime',total().toLocaleString('en-GB')],['Team streak',teamStreak()+'d'],['Momentum',momentum()],['Legacy score',M.reduce((a,m)=>a+score(m.id),0).toLocaleString('en-GB')],['Active builders',active+'/3']].map(([l,v])=>`<div class="stat"><span class="lbl">${l}</span><span class="num">${v}</span></div>`).join('');
  $('builders').innerHTML=M.map(builderCard).join('');
- // intel
- const tot=total(),next=Math.ceil((tot+1)/500)*500;
- let bestW=0,bestWi=0;for(let w=0;w<16;w++){const v=span(null,w*7,w*7+7);if(v>bestW){bestW=v;bestWi=w}}
- const wk=H.map(([k,l])=>[l,S.rows.filter(x=>x[k]&&x.date>addD(TODAY,-7)).length]).sort((a,b)=>b[1]-a[1]);
- const lead=[...M].sort((a,b)=>span(b.id,0,7)-span(a.id,0,7))[0];
- const intel=[[`${(next-tot)} bricks to the team's ${next.toLocaleString('en-GB')}-brick milestone.`],[bestWi===0?`This is the strongest week on the wall so far: ${bestW} bricks.`:`Strongest week so far: ${bestW} bricks, ${bestWi} week${bestWi>1?'s':''} ago. This week: ${span(null,0,7)}.`],[`${wk[0][0]} is the most-laid brick this week (${wk[0][1]}). ${wk[5][0]} has the most room to grow (${wk[5][1]}).`],[`${lead.name} leads the last 7 days with ${span(lead.id,0,7)} bricks.`],[`Freedom Fund is ${(fundBal('freedom')/450).toFixed(1)}% of the way; Legacy Fund ${(fundBal('legacy')/300).toFixed(1)}%.`]];
- if(!tot)intel.splice(0,intel.length,['Lay your first brick today. Insights appear here as the wall grows.']);
- $('intel').innerHTML=intel.map(([t],i)=>`<li><span class="plus">${['◆','▲','●','★','£'][i]}</span><span>${esc(t)}</span><span></span></li>`).join('');
+ renderIntelMini();
  // timeline
  const ev=[...S.rows.filter(x=>bricks(x)).map(x=>({d:x.date,who:x.mid,t:`laid ${H.filter(([k])=>x[k]).map(h=>h[1]).join(', ')}`,v:'+'+bricks(x)+' 🧱'.slice(0,0)+(bricks(x)===1?' brick':' bricks')})),...S.tx.map(x=>({d:x.date,who:x.mid,t:`added to ${FUNDS[x.fund].name}${x.note?' · '+x.note:''}`,v:'+'+gbp(x.amt),ts:x.ts||0}))].sort((a,b)=>b.d.localeCompare(a.d)||(b.ts||0)-(a.ts||0)).slice(0,7);
  $('timeline').innerHTML=ev.length?ev.map(e=>`<li><span class="when">${e.d===TODAY?'Today':esc(fmtD(e.d))}</span><span><b>${esc(M.find(m=>m.id===e.who)?.name)}</b> ${esc(e.t)}</span><span class="plus">${esc(e.v)}</span></li>`).join(''):'<li><span></span><span class="lbl">Nothing yet. Bricks and fund deposits show up here.</span><span></span></li>';
@@ -531,7 +536,7 @@ function renderHall(){
  $('builders2').innerHTML=M.map(builderCard).join('');
  $('hall').innerHTML=M.map(m=>{const g=ACH.filter(a=>a[2](m.id)).length;return`<div class="card" style="margin-top:14px"><div class="row"><h3>${m.name}</h3><span class="pill b">${g}/${ACH.length} unlocked</span></div><div class="ach">${ACH.map(a=>`<div class="a${a[2](m.id)?' got':''}"><b>${a[0]}</b><span>${a[1]}</span></div>`).join('')}</div></div>`}).join('');
 }
-function render(){renderHQ();renderBuild();renderWall();renderFunds();renderHall();renderBiz()}
+function render(){renderHQ();renderBuild();renderWall();renderFunds();renderHall();renderBiz();renderIntel()}
 
 // ---------- BUSINESS HQ ----------
 const OFFERS=[
@@ -714,6 +719,72 @@ $('v-biz').addEventListener('click',e=>{
 document.querySelectorAll('[data-out]').forEach(b=>b.addEventListener('click',()=>{B().out.push({date:TODAY,mid:S.me,n:+b.dataset.out});act(`+${b.dataset.out} contacts logged`)}));
 $('clearSample').addEventListener('click',()=>{if(!clearArm){clearArm=true;$('clearSample').textContent='Tap again to clear';setTimeout(()=>{clearArm=false;$('clearSample').textContent='Clear sample, start for real'},4000);return}
  S.biz={sample:false,leads:[],appts:[],deals:[],builds:[],out:[]};save();render();toast('Sample cleared. Business HQ is ready for real data')});
+
+// ---------- LEGACY INTELLIGENCE ----------
+const PER_DAY=4,TEAM_WEEK=PER_DAY*7*M.length,TARGET_CLIENTS=54,TARGET_PROFIT=8100,FREEDOM='2028-05-01';
+const wkStartOf=s=>{const w=new Date(s+'T12:00').getDay();return addD(s,-((w+6)%7))};
+const weekSum=(ws,mid)=>{let t=0;const d=byDay(mid);for(let i=0;i<7;i++)t+=d[addD(ws,i)]||0;return t};
+const monthsLeft=()=>Math.max(.5,(new Date(FREEDOM+'T12:00')-new Date(TODAY+'T12:00'))/864e5/30.44);
+const pctTxt=(a,b)=>b?Math.round((a-b)/b*100):null;
+function intelData(){
+ const out=[],add=(area,status,title,detail)=>out.push({area,status,title,detail});
+ const ws=wkStartOf(TODAY),lws=addD(ws,-7),elapsed=Math.round((new Date(TODAY+'T12:00')-new Date(ws+'T12:00'))/864e5)+1;
+ const tw=weekSum(ws),lw=weekSum(lws),due=Math.round(TEAM_WEEK*elapsed/7),tot=total();
+ // bricks
+ if(!tot)add('Bricks','info','No bricks laid yet','Lay your first brick today. The feed fills up as the wall grows.');
+ else{
+  add('Bricks',tw>=due?'good':'warn',`Team: ${tw} bricks this week`,`Target by today is ${due} (${PER_DAY} a day each). ${Math.max(TEAM_WEEK-tw,0)} to go for the full week target of ${TEAM_WEEK}.`);
+  const lwSame=(()=>{let t=0;const d=byDay();for(let i=0;i<elapsed;i++)t+=d[addD(lws,i)]||0;return t})();
+  if(lwSame||tw)add('Bricks',tw>=lwSame?'good':'warn',tw>=lwSame?`Up on last week: ${tw} vs ${lwSame}`:`Behind last week's pace: ${tw} vs ${lwSame}`,`Compared to the same point last week. Last week finished on ${lw} bricks.`);
+  const td=S.rows.filter(r=>r.date===TODAY).reduce((a,r)=>a+bricks(r),0),zero=M.filter(m=>!(rowOf(m.id,TODAY)&&bricks(rowOf(m.id,TODAY))));
+  add('Bricks',zero.length?'warn':'good',`Today: ${td} of ${M.length*6} bricks laid`,zero.length?`Still to lay a first brick today: ${zero.map(m=>m.name).join(', ')}.`:'All three builders have laid a brick today.');
+  const by=M.map(m=>[m,weekSum(ws,m.id)]).sort((a,b)=>b[1]-a[1]);
+  if(by[0][1])add('Bricks','info',`${by[0][0].name} leads this week with ${by[0][1]} bricks`,by.map(([m,v])=>`${m.name} ${v}`).join(' · ')+` (target ${PER_DAY*7} each).`);
+  const hw=H.map(([k,l])=>[l,S.rows.filter(r=>r[k]&&r.date>=ws).length]).sort((a,b)=>b[1]-a[1]);
+  if(hw[0][1])add('Bricks',hw[5][1]<elapsed?'warn':'info',`${hw[5][0]} is the weakest brick this week (${hw[5][1]})`,`Strongest is ${hw[0][0]} (${hw[0][1]}). One ${hw[5][0].toLowerCase()} brick each today closes the gap fastest.`);
+  const st=M.map(m=>[m,streak(m.id)]).sort((a,b)=>b[1]-a[1]);
+  if(st[0][1]>1)add('Bricks','good',`${st[0][0].name} is on a ${st[0][1]}-day streak`,`Team streak (all three laying a brick): ${teamStreak()} days.`);
+  const next=Math.ceil((tot+1)/250)*250;add('Bricks','info',`${tot.toLocaleString('en-GB')} lifetime bricks`,`${next-tot} to the ${next.toLocaleString('en-GB')} milestone.`);
+ }
+ // business
+ const live=liveDeals().length,prof=mrrP(),ml=monthsLeft(),need=Math.max(0,TARGET_CLIENTS-live)/ml;
+ const [y,m]=TODAY.split('-').map(Number),idx=(y-2026)*12+m-11,expect=Math.max(0,3*idx);
+ add('Business',idx<1?'info':live>=expect?'good':'warn',`${live} of ${TARGET_CLIENTS} clients live · ${gbp(prof)}/month profit`,idx<1?`First clients due in December. Hitting ${TARGET_CLIENTS} by May 2028 means about ${need.toFixed(1)} new clients a month from now.`:`The plan expects ${expect} by the end of this month. To reach ${TARGET_CLIENTS} by May 2028 you now need about ${need.toFixed(1)} new clients a month.`);
+ const c=B().out.filter(o=>o.date>=ws).reduce((a,o)=>a+o.n,0),cdue=Math.round(175*elapsed/7);
+ add('Business',c>=cdue?'good':'warn',`${c} outreach contacts this week`,`Target by today: ${cdue} (175 a week). Every 40 contacts books about one appointment.`);
+ const bk=B().appts.filter(a=>a.created>=ws).length;add('Business',bk>=Math.ceil(4*elapsed/7)?'good':'warn',`${bk} appointments booked this week`,'Target: 4 a week.');
+ const cm=B().deals.filter(d=>isClosed(d)&&inMon(d.closed)).length;add('Business',cm>=3?'good':cm>0?'info':'warn',`${cm} deal${cm===1?'':'s'} closed this month`,'Target: 3 a month.');
+ const late=B().builds.filter(b=>b.stage!=='Live'&&b.due<TODAY);if(late.length)add('Business','warn',`${late.length} build${late.length>1?'s':''} overdue`,late.map(b=>bname(B().deals.find(d=>d.id===b.deal)?.lead)).join(', ')+'. Jack, these come first.');
+ const stale=B().deals.filter(d=>d.stage==='Proposal sent'&&d.date<=addD(TODAY,-3));if(stale.length)add('Business','warn',`${stale.length} proposal${stale.length>1?'s':''} waiting 3+ days`,stale.map(d=>bname(d.lead)).join(', ')+'. Michael, time for a follow-up call.');
+ const soon=B().appts.filter(a=>a.status==='Booked'&&a.date>=TODAY&&a.date<=addD(TODAY,2));if(soon.length)add('Business','info',`${soon.length} call${soon.length>1?'s':''} in the next 48 hours`,soon.map(a=>`${bname(a.lead)} ${a.date===TODAY?'today':fmtD(a.date)} ${a.time}`).join(' · '));
+ const held=B().appts.filter(a=>a.status==='Held').length,ns=B().appts.filter(a=>a.status==='No-show').length,cl=B().deals.filter(isClosed).length;
+ if(held+ns)add('Business','info',`Show rate ${Math.round(held/(held+ns)*100)}% · close rate ${held?Math.round(cl/held*100):0}%`,'Plan assumes 70% show and 25% close.');
+ // money
+ [['freedom','Freedom Fund'],['legacy','Legacy Fund']].forEach(([k,n])=>{const b=fundBal(k),g=FUNDS[k].goal,left=Math.max(g-b,0);
+  if(!(S.base&&S.base[k])&&!S.tx.some(t=>t.fund===k))add('Money','info',`${n}: add your starting balance`,'Enter it on the Funds tab so the countdown is accurate.');
+  else add('Money',left===0?'good':'info',`${n}: ${gbp(b)} of ${gbp(g)} (${Math.round(b/g*100)}%)`,left?`${gbp(left)} to go. That's about ${gbp(left/ml)} a month to fill it by May 2028.`:'Full. Time to set the next goal.')});
+ // projection
+ const recent=B().deals.filter(d=>isClosed(d)&&d.closed>=addD(TODAY,-60)).length/2,avg=live?prof/live:150,inBuild=B().builds.filter(b=>b.stage!=='Live').length;
+ const proj=Math.round(live+inBuild+recent*ml),projP=Math.round(proj*avg);
+ add('Freedom',recent?projP>=TARGET_PROFIT?'good':'warn':'info',`${Math.round((new Date(FREEDOM+'T12:00')-new Date(TODAY+'T12:00'))/864e5)} days to May 2028`,recent?`At the last 60 days' pace (${recent.toFixed(1)} deals a month), you'd reach about ${proj} clients and ${gbp(projP)}/month by May 2028. Target: ${TARGET_PROFIT.toLocaleString('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0})}.`:'The projection starts once the first deals close.');
+ return out;
+}
+const STAT={good:['On track','g'],warn:['Needs a push','a'],info:['Update','b']};
+const feedHTML=list=>list.map(x=>`<li><span class="tag ${STAT[x.status][1]}">${STAT[x.status][0]}</span><span><b>${esc(x.title)}</b><div class="lbl">${esc(x.detail)}</div></span><span class="lbl">${esc(x.area)}</span></li>`).join('');
+function renderIntelMini(){const d=intelData(),pri=[...d.filter(x=>x.status==='warn'),...d.filter(x=>x.status!=='warn')].slice(0,5);$('intel').innerHTML=feedHTML(pri)}
+function renderIntel(){
+ const d=intelData(),ws=wkStartOf(TODAY),elapsed=Math.round((new Date(TODAY+'T12:00')-new Date(ws+'T12:00'))/864e5)+1,tw=weekSum(ws);
+ const ff=fundBal('freedom');
+ $('intelKpis').innerHTML=[[`${tw}`,`team bricks this week · target ${TEAM_WEEK}`],[`${S.rows.filter(r=>r.date===TODAY).reduce((a,r)=>a+bricks(r),0)}/${M.length*6}`,'bricks today'],[`${liveDeals().length}/${TARGET_CLIENTS}`,'clients live'],[gbp(mrrP()),`monthly profit · target ${gbp(TARGET_PROFIT)}`],[`${Math.round(ff/FUNDS.freedom.goal*100)}%`,`Freedom Fund · ${gbp(ff)}`],[`${d.filter(x=>x.status==='good').length}/${d.filter(x=>x.status!=='info').length}`,'targets on track']].map(([v,l])=>`<div class="tile"><b>${v}</b><span>${l}</span></div>`).join('');
+ const weeks=Array.from({length:8},(_,i)=>addD(ws,-7*(7-i))),vals=weeks.map(w=>weekSum(w)),mx=Math.max(TEAM_WEEK,...vals);
+ $('intelWeeks').innerHTML=`<div style="position:relative;height:180px;display:flex;align-items:flex-end;gap:8px;border-bottom:1px solid var(--line);margin-top:22px"><div style="position:absolute;left:0;right:0;bottom:${TEAM_WEEK/mx*100}%;border-top:1px dashed var(--green)"><span class="lbl" style="position:absolute;right:0;top:-20px;font-size:12px">target ${TEAM_WEEK}</span></div>${vals.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;align-items:center"><span class="num" style="font-size:12px">${v}</span><i style="display:block;width:100%;height:${v/mx*100}%;background:${i===7?'var(--gold2)':'var(--gold)'};border-radius:4px 4px 0 0;min-height:2px"></i></div>`).join('')}</div><div style="display:flex;gap:8px;font-size:12px;color:var(--mute);margin-top:4px">${weeks.map((w,i)=>`<span style="flex:1;text-align:center">${i===7?'This wk':esc(fmtD(w))}</span>`).join('')}</div>`;
+ $('intelPeople').innerHTML=`<thead><tr><th>Builder</th><th class="n">This wk</th><th class="n">Last wk</th><th class="n">Today</th><th class="n">Streak</th><th class="n" title="Business bricks this week">Biz</th><th class="n" title="Spanish bricks this week">Spanish</th></tr></thead><tbody>${M.map(m=>{const r=rowOf(m.id,TODAY);const hb=k=>S.rows.filter(x=>x.mid===m.id&&x[k]&&x.date>=ws).length;return`<tr><td><b>${m.name}</b></td><td class="n num">${weekSum(ws,m.id)} / ${PER_DAY*7}</td><td class="n num">${weekSum(addD(ws,-7),m.id)}</td><td class="n num">${r?bricks(r):0}/6</td><td class="n num">${streak(m.id)}d</td><td class="n num">${hb('biz')}</td><td class="n num">${hb('sp')}</td></tr>`}).join('')}</tbody>`;
+ const areas=['Bricks','Business','Money','Freedom'];
+ $('intelFeed').innerHTML=areas.map(a=>{const l=d.filter(x=>x.area===a);return l.length?`<div class="card"><h3>${a}</h3><ul class="feed">${feedHTML(l)}</ul></div>`:''}).join('');
+ $('intelTime').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(()=>{try{renderIntelMini();renderIntel()}catch(e){}},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){try{renderIntelMini();renderIntel()}catch(e){}}});
 
 // setup
 $('tabs').innerHTML=TABS.map(([k,l,p])=>`<a href="#${k}" data-v="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>${l}</a>`).join('');
